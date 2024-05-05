@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### SCRET KEY INFO
+application-db.properties
