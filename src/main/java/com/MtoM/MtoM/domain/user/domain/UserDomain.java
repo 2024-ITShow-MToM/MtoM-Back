@@ -52,4 +52,7 @@ public class UserDomain {
 
     @Column
     private String imogi;
+
+    @Column
+    private String social;
 }
