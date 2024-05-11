@@ -15,4 +15,11 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ErrorCode.INTER_SERER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(IdDuplicateException.class)
+    public ResponseEntity<ErrorResponse> idDuplicateException(IdDuplicateException ex){
+        log.error("idDuplicateException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
 }
