@@ -1,5 +1,6 @@
-package com.MtoM.MtoM.global.exception.error;
+package com.MtoM.MtoM.global.exception;
 
+import com.MtoM.MtoM.global.exception.error.ErrorCode;
 import lombok.Getter;
 
 @Getter
