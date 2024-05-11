@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.conifg;
+package com.MtoM.MtoM.global.conifg;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
