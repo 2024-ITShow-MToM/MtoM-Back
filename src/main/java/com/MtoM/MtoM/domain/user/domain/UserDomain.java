@@ -1,8 +1,11 @@
 package com.MtoM.MtoM.domain.user.domain;
 
+import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Builder
 @Getter @Setter
@@ -55,4 +58,8 @@ public class UserDomain {
 
     @Column
     private String social;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<ProjectDomain> projectDomainList;
 }
