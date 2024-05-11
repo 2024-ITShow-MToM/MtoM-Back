@@ -9,7 +9,7 @@ public class RegisterRequestDto {
     private String password;
     private String email;
 
-    public UserDomain toEntity(){
+    public UserDomain toEntity(String password){
         return UserDomain.builder()
                 .id(id)
                 .password(password)
