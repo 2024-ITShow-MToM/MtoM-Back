@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.global.exception.error;
 
+import com.MtoM.MtoM.global.exception.EmailDuplicateException;
+import com.MtoM.MtoM.global.exception.IdDuplicateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IdDuplicateException.class)
     public ResponseEntity<ErrorResponse> idDuplicateException(IdDuplicateException ex){
         log.error("idDuplicateException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(EmailDuplicateException.class)
+    public ResponseEntity<ErrorResponse> emailDuplicateException(EmailDuplicateException ex){
+        log.error("emailDuplicateException", ex);
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
