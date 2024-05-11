@@ -52,7 +52,7 @@ public class ProjectDomain {
     private Long promoter_personnel;
 
     @Column(columnDefinition = "TEXT")
-    private Long  introduction;
+    private String  introduction;
 
     @Column
     private Boolean is_matching;
