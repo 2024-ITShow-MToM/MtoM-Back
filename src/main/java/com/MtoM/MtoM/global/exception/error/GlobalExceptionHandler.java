@@ -2,6 +2,7 @@ package com.MtoM.MtoM.global.exception.error;
 
 import com.MtoM.MtoM.global.exception.EmailDuplicateException;
 import com.MtoM.MtoM.global.exception.EmailNotFoundException;
+import com.MtoM.MtoM.global.exception.IDNotFoundException;
 import com.MtoM.MtoM.global.exception.IdDuplicateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailNotFoundException.class)
     public ResponseEntity<ErrorResponse> emailNotFoundException(EmailNotFoundException ex){
         log.error("emailNotFoundException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(IDNotFoundException.class)
+    public ResponseEntity<ErrorResponse> IDNotFoundException(IDNotFoundException ex){
+        log.error("IDNotFoundException", ex);
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
