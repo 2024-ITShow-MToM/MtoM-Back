@@ -1,10 +1,7 @@
 package com.MtoM.MtoM.domain.user.controller;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import com.MtoM.MtoM.domain.user.dto.FindByUserRequestDto;
-import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
-import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
-import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
+import com.MtoM.MtoM.domain.user.dto.*;
 import com.MtoM.MtoM.domain.user.service.UserService;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +49,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<UserDomain> findByUser (@RequestBody FindByUserRequestDto requestDto){
         UserDomain user = userService.findByUser(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/profile/img")
+    public ResponseEntity<String> findByProfileImg(@RequestBody FindByProfileImgRequestDto requestDto){
+        String id = requestDto.getId();
+        String profileImgURL = s3UploadService.getImagePath(id);
+        return ResponseEntity.status(HttpStatus.OK).body(profileImgURL);
     }
 }
