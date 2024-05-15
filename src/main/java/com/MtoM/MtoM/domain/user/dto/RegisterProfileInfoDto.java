@@ -2,12 +2,14 @@ package com.MtoM.MtoM.domain.user.dto;
 
 import com.MtoM.MtoM.domain.user.domain.Gender;
 import com.MtoM.MtoM.domain.user.domain.Major;
+import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import lombok.Getter;
+import org.apache.catalina.User;
 
 @Getter
 public class RegisterProfileInfoDto {
-    private String email;
+    private UserDomain userId;
     private String name;
     private Long student_id;
     private String birthday;
@@ -16,21 +18,15 @@ public class RegisterProfileInfoDto {
     private Major major;
     private String mbti;
     private String skill_name;
-    private String skill_score;
+    private Integer skill_score;
     private String personal;
     private String imogi;
 
-    public UserDomain toEntity(){
-        return UserDomain.builder()
-                .name(name)
-                .studnet_id(student_id)
-                .birthday(birthday)
-                .gender(gender)
-                .phonenumber(phonenumber)
-                .major(major)
-                .mbti(mbti)
-                .personal(personal)
-                .imogi(imogi)
+    public SkillDomain toSkillEntity(){
+        return SkillDomain.builder()
+                .user(userId)
+                .skill_name(skill_name)
+                .skill_score(skill_score)
                 .build();
     }
 }
