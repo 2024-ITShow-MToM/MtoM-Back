@@ -57,4 +57,10 @@ public class PostController {
         ResponseEntity<String> response = postService.deletePost(id);
         return new ResponseEntity<>(response.getBody(), response.getStatusCode());
     }
+
+    @PostMapping("/{postId}/heart")
+    public ResponseEntity<String> togglePostHeart(@PathVariable Long postId, @RequestParam String userId) {
+        postService.togglePostHeart(userId, postId);
+        return ResponseEntity.ok("Heart toggled successfully");
+    }
 }
