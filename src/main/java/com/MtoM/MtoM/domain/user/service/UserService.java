@@ -1,6 +1,7 @@
 package com.MtoM.MtoM.domain.user.service;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.domain.user.dto.FindByUserRequest;
 import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
@@ -70,6 +71,15 @@ public class UserService {
         return id;
     }
 
+    public UserDomain findByUser(FindByUserRequest requestDto){
+        String id = requestDto.getId();
+        checkId(id);
+
+        Optional<UserDomain> optionalUser = userRepository.findById(id);
+        UserDomain user = optionalUser.get();
+        return user;
+    }
+
     public void duplicateId(String id){
         if(userRepository.existsById(id)){
             throw new IdDuplicateException("id duplicated", ErrorCode.ID_DUPLICATION);
@@ -93,5 +103,6 @@ public class UserService {
             throw new PasswordNotMatchException("password not found", ErrorCode.PASSWORD_NOTMATCH);
         }
     }
+
 }
 
