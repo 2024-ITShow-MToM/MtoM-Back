@@ -44,6 +44,7 @@ public class UserDomain {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     @Column
     private String profile;
 
@@ -56,6 +57,7 @@ public class UserDomain {
     @Column
     private String imogi;
 
+    @JsonIgnore
     @Column
     private String social;
 
