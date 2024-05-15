@@ -6,37 +6,43 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Integer> redisTemplate; // RedisTemplate의 값 타입을 Integer로 변경
 
-    public RedisService(RedisTemplate<String, Object> redisTemplate) {
+    public RedisService(RedisTemplate<String, Integer> redisTemplate) { // 생성자도 Integer로 변경
         this.redisTemplate = redisTemplate;
     }
 
-    public void incrementPostViews(String postId) { // postId를 문자열로 사용
+    public void incrementPostViews(String postId) {
         String key = "post:" + postId + ":views";
-        redisTemplate.opsForValue().increment(key);
+        redisTemplate.opsForValue().increment(key); // Integer로 증가
     }
 
-    public Long getPostViews(String postId) { // postId를 문자열로 사용
+    public Integer getPostViews(String postId) {
         String key = "post:" + postId + ":views";
-        Object views = redisTemplate.opsForValue().get(key);
-        return views != null ? (Long) views : 0;
+        Integer views = redisTemplate.opsForValue().get(key); // Integer로 받아옴
+        return views != null ? views : 0; // null 처리도 Integer로
     }
 
-    public void togglePostHeart(String userId, Long postId) { // userId를 문자열로 사용
+    public void togglePostHeart(String userId, Long postId) {
         String key = "post:" + postId + ":hearts";
-        String field = userId; // 이미 문자열이므로 변환 없이 사용
+        String field = userId;
         Boolean isHearted = redisTemplate.opsForHash().hasKey(key, field);
         if (isHearted != null && isHearted) {
             redisTemplate.opsForHash().delete(key, field);
         } else {
-            redisTemplate.opsForHash().put(key, field, true);
+            redisTemplate.opsForHash().put(key, field, 1); // Integer로 저장
         }
     }
 
-    public boolean isPostHearted(String userId, Long postId) { // userId를 문자열로 사용
+    public Integer getPostHearts(String postId) {
         String key = "post:" + postId + ":hearts";
-        String field = userId; // 이미 문자열이므로 변환 없이 사용
-        return redisTemplate.opsForHash().hasKey(key, field) != null && redisTemplate.opsForHash().hasKey(key, field);
+        return Math.toIntExact(redisTemplate.opsForHash().size(key)); // Redis에 저장된 값이 Integer이므로 반환 타입도 Integer로 변경
+    }
+
+    public boolean isPostHearted(String userId, Long postId) {
+        String key = "post:" + postId + ":hearts";
+        String field = userId;
+        redisTemplate.opsForHash().hasKey(key, field);
+        return redisTemplate.opsForHash().hasKey(key, field); // 여기서는 Integer가 아니라 boolean으로 반환되므로 변경하지 않음
     }
 }

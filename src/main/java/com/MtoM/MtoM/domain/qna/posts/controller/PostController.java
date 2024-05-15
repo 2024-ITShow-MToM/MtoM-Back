@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -23,9 +24,9 @@ public class PostController {
 
     // 모든 게시물 조회
     @GetMapping
-    public ResponseEntity<List<PostDomain>> getAllPosts() {
-        List<PostDomain> posts = postService.getAllPosts();
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    public ResponseEntity<List<Map<String, Object>>> getAllPosts() {
+        List<Map<String, Object>> postsWithStats = postService.getAllPosts();
+        return new ResponseEntity<>(postsWithStats, HttpStatus.OK);
     }
 
     // 게시물 상세 조회

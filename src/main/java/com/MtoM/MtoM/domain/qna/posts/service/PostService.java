@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -27,8 +30,16 @@ public class PostService {
     }
 
     // 모든 게시물 조회
-    public List<PostDomain> getAllPosts() {
-        return postRepository.findAll();
+    public List<Map<String, Object>> getAllPosts() {
+        List<PostDomain> posts = postRepository.findAll();
+
+        return posts.stream().map(post -> {
+            Map<String, Object> postMap = new HashMap<>();
+            postMap.put("post", post);
+            postMap.put("hearts", redisService.getPostHearts(String.valueOf(post.getId())));
+            postMap.put("views", redisService.getPostViews(String.valueOf(post.getId())));
+            return postMap;
+        }).collect(Collectors.toList());
     }
 
     // 게시물 상세 조회
