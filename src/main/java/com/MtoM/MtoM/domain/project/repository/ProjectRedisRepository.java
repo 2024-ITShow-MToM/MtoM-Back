@@ -6,3 +6,4 @@ import org.springframework.data.repository.CrudRepository;
 public interface ProjectRedisRepository extends CrudRepository<ProjectRedisDomain, Integer> {
 
 }
+

@@ -12,3 +12,4 @@ public class IdDuplicateException extends RuntimeException {
         this.errorCode = errorCode;
     }
 }
+

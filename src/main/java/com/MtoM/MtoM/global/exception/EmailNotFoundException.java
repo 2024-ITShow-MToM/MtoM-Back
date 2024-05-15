@@ -12,3 +12,4 @@ public class EmailNotFoundException extends RuntimeException{
         this.errorCode = errorCode;
     }
 }
+

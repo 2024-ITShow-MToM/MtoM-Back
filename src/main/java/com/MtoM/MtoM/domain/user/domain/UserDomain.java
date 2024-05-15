@@ -71,3 +71,4 @@ public class UserDomain {
     @OneToMany(mappedBy = "user",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<SkillDomain> skillDomainList;
 }
+

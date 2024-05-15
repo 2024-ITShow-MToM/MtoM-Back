@@ -19,3 +19,4 @@ public class ProjectRedisDomain {
     private Long promoter_member;
     private Long current_promoter_member;
 }
+

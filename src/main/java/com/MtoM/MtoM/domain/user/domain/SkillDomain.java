@@ -24,3 +24,4 @@ public class SkillDomain {
     @Column
     private Integer skill_score;
 }
+

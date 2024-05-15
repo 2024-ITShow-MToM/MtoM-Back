@@ -12,3 +12,4 @@ public class IDNotFoundException extends RuntimeException{
         this.errorCode = errorCode;
     }
 }
+

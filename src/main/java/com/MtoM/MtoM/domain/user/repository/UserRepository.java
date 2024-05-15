@@ -7,3 +7,4 @@ public interface UserRepository extends JpaRepository<UserDomain, String> {
     boolean existsByEmail(String email);
 
 }
+

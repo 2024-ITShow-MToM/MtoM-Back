@@ -26,3 +26,4 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body("프로필 정보 등록 성공했습니다.");
     }
 }
+

@@ -5,3 +5,4 @@ public enum Major {
     뉴미디어_디자인과,
     웹_솔루션과
 }
+
