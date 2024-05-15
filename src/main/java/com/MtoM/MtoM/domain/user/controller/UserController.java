@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.user.controller;
 
+import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.domain.user.dto.FindByUserRequest;
 import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
@@ -48,5 +50,11 @@ public class UserController {
     public ResponseEntity<String> loginUser(@RequestBody LoginUserRequestDto requestDto){
         String id = userService.loginUser(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    @GetMapping()
+    public ResponseEntity<UserDomain> findByUser (@RequestBody FindByUserRequest requestDto){
+        UserDomain user = userService.findByUser(requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 }
