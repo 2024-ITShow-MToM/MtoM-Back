@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @Getter @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity (name = "users")
 public class UserDomain {
     @Id
@@ -21,7 +21,7 @@ public class UserDomain {
     private String name;
 
     @Column
-    private Long studnet_id;
+    private Long student_id;
 
     @Column
     private String birthday;
@@ -58,6 +58,10 @@ public class UserDomain {
 
     @Column
     private String social;
+
+    public UserDomain(String id){
+        this.id = id;
+    }
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
