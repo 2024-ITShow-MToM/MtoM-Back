@@ -1,6 +1,7 @@
 package com.MtoM.MtoM.global.S3Service;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.domain.user.dto.FindByProfileImgRequestDto;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.exception.IDNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
@@ -26,8 +27,7 @@ public class S3Service {
 
     public void uploadProfileFile(String id, MultipartFile file, String type) throws IOException {
 
-        if(!userRepository.existsById(id))
-            throw new IDNotFoundException("id not found", ErrorCode.ID_NOTFOUND);
+        checkId(id);
 
         String fileName = generateFileName(id, type);
 
@@ -49,5 +49,19 @@ public class S3Service {
         metadata.setContentLength(file.getSize());
         amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
         return amazonS3.getUrl(bucketName, fileName).toString();
+    }
+
+    public String getImagePath (String id){
+        System.out.println(id);
+        checkId(id);
+        Optional<UserDomain> optionalUser = userRepository.findById(id);
+        UserDomain user = optionalUser.get();
+        String profilePath =user.getProfile();
+        return amazonS3.getUrl(bucketName, profilePath).toString();
+    }
+
+    private void checkId (String id){
+        if(!userRepository.existsById(id))
+            throw new IDNotFoundException("id not found", ErrorCode.ID_NOTFOUND);
     }
 }
