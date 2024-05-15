@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.user.controller;
 
+import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
 import com.MtoM.MtoM.domain.user.service.UserService;
@@ -41,5 +42,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("프로필 이미지 업로드에 실패했습니다");
         }
 
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody LoginUserRequestDto requestDto){
+        String id = userService.loginUser(requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }
