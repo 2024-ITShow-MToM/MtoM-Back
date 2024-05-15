@@ -1,7 +1,7 @@
 package com.MtoM.MtoM.domain.user.controller;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import com.MtoM.MtoM.domain.user.dto.FindByUserRequest;
+import com.MtoM.MtoM.domain.user.dto.FindByUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<UserDomain> findByUser (@RequestBody FindByUserRequest requestDto){
+    public ResponseEntity<UserDomain> findByUser (@RequestBody FindByUserRequestDto requestDto){
         UserDomain user = userService.findByUser(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }

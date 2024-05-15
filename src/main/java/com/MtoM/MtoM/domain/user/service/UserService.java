@@ -1,7 +1,7 @@
 package com.MtoM.MtoM.domain.user.service;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import com.MtoM.MtoM.domain.user.dto.FindByUserRequest;
+import com.MtoM.MtoM.domain.user.dto.FindByUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
@@ -71,7 +71,7 @@ public class UserService {
         return id;
     }
 
-    public UserDomain findByUser(FindByUserRequest requestDto){
+    public UserDomain findByUser(FindByUserRequestDto requestDto){
         String id = requestDto.getId();
         checkId(id);
 
