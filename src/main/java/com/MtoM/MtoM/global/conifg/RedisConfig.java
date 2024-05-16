@@ -39,4 +39,13 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(new GenericToStringSerializer<>(Integer.class)); // 해시 값 타입을 Integer로 설정
         return redisTemplate;
     }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplateForObject(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setValueSerializer(new GenericToStringSerializer<>(Object.class));
+        return template;
+    }
+
 }
