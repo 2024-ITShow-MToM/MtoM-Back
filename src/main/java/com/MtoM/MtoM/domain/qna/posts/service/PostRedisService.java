@@ -4,11 +4,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RedisService {
+public class PostRedisService {
 
     private final RedisTemplate<String, Integer> redisTemplate; // RedisTemplate의 값 타입을 Integer로 변경
 
-    public RedisService(RedisTemplate<String, Integer> redisTemplate) { // 생성자도 Integer로 변경
+    public PostRedisService(RedisTemplate<String, Integer> redisTemplate) { // 생성자도 Integer로 변경
         this.redisTemplate = redisTemplate;
     }
 

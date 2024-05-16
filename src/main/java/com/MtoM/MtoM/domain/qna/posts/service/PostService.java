@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final RedisService redisService;
+    private final PostRedisService redisService;
     private final UserRepository userRepository;
 
     @Autowired
-    public PostService(PostRepository postRepository, RedisService redisService, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, PostRedisService redisService, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.redisService = redisService;
         this.userRepository = userRepository;
@@ -78,9 +78,12 @@ public class PostService {
 
 
     // 게시물 수정
-    public ResponseEntity<String> updatePost(Long postId, PostDomain updatedPost) {
+    public ResponseEntity<String> updatePost(Long postId, PostDomain updatedPost, String userId) {
         PostDomain existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+        if (!existingPost.getUser().getId().equals(userId)) {
+            throw new RuntimeException("해당 사용자는 게시물을 수정할 권한이 없습니다.");
+        }
         existingPost.setTitle(updatedPost.getTitle());
         existingPost.setContent(updatedPost.getContent());
         existingPost.setImg(updatedPost.getImg());
@@ -96,7 +99,12 @@ public class PostService {
     }
 
     // 게시물 삭제
-    public ResponseEntity<String> deletePost(Long postId) {
+    public ResponseEntity<String> deletePost(Long postId, String userId) {
+        PostDomain existingPost = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+        if (!existingPost.getUser().getId().equals(userId)) {
+            throw new RuntimeException("해당 사용자는 게시물을 삭제할 권한이 없습니다.");
+        }
         postRepository.deleteById(postId);
 
         // 삭제 완료 메시지를 JSON 형식으로 반환

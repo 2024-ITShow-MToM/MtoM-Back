@@ -46,18 +46,25 @@ public class PostController {
 
     // 게시물 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updatePost(@PathVariable("id") Long id, @RequestBody PostDomain post) {
-        ResponseEntity<String> response = postService.updatePost(id, post);
-        return new ResponseEntity<>(response.getBody(), response.getStatusCode());
+    public ResponseEntity<String> updatePost(@PathVariable("id") Long id, @RequestBody PostDomain post, @RequestParam String userId) {
+        try {
+            ResponseEntity<String> response = postService.updatePost(id, post, userId);
+            return new ResponseEntity<>(response.getBody(), response.getStatusCode());
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
     // 게시물 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable("id") Long id) {
-        ResponseEntity<String> response = postService.deletePost(id);
-        return new ResponseEntity<>(response.getBody(), response.getStatusCode());
+    public ResponseEntity<String> deletePost(@PathVariable("id") Long id, @RequestParam String userId) {
+        try {
+            ResponseEntity<String> response = postService.deletePost(id, userId);
+            return new ResponseEntity<>(response.getBody(), response.getStatusCode());
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
-
     @PostMapping("/{postId}/heart")
     public ResponseEntity<String> togglePostHeart(@PathVariable Long postId, @RequestParam String userId) {
         postService.togglePostHeart(userId, postId);
