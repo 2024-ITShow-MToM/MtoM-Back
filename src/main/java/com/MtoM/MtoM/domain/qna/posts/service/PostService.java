@@ -5,29 +5,29 @@ import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
+import com.MtoM.MtoM.global.S3Service.S3Service;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final PostRedisService redisService;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
-    @Autowired
-    public PostService(PostRepository postRepository, PostRedisService redisService, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.redisService = redisService;
-        this.userRepository = userRepository;
-    }
 
     // 모든 게시물 조회
     public List<Map<String, Object>> getAllPosts() {
@@ -57,13 +57,23 @@ public class PostService {
         PostDomain post = new PostDomain();
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
-        post.setImg(postDTO.getImg());
         post.setHashtags(postDTO.getHashtags());
 
         // userId를 이용하여 사용자를 검색하여 user 필드에 설정
         UserDomain user = userRepository.findById(postDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         post.setUser(user);
+
+        // 이미지 파일이 있는 경우 S3에 업로드하고 URL을 설정
+        MultipartFile imgFile = postDTO.getImg();
+        if (imgFile != null && !imgFile.isEmpty()) {
+            try {
+                String imgUrl = s3Service.uploadImage(imgFile, "post");
+                post.setImg(imgUrl);
+            } catch (IOException e) {
+                return new ResponseEntity<>("{\"message\": \"이미지 업로드 중 오류가 발생했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
 
         // PostRepository를 통해 저장
         postRepository.save(post);

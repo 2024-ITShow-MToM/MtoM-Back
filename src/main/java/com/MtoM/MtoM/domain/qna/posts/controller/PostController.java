@@ -3,6 +3,7 @@ package com.MtoM.MtoM.domain.qna.posts.controller;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.service.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +14,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
+@RequiredArgsConstructor
+
 public class PostController {
 
     private final PostService postService;
 
-    @Autowired
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
 
     // 모든 게시물 조회
     @GetMapping
@@ -38,7 +37,7 @@ public class PostController {
 
     // 게시물 생성
     @PostMapping
-    public ResponseEntity<String> createPost(@RequestBody CreatePostDTO postDTO) {
+    public ResponseEntity<String> createPost(@ModelAttribute CreatePostDTO postDTO) {
         ResponseEntity<String> response = postService.createPost(postDTO);
         return new ResponseEntity<>(response.getBody(), response.getStatusCode());
     }
