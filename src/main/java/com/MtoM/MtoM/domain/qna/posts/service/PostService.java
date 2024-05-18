@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.qna.posts.service;
 
+import com.MtoM.MtoM.domain.qna.posts.dao.CommentResponse;
+import com.MtoM.MtoM.domain.qna.posts.dao.PostResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostDTO;
@@ -7,10 +9,13 @@ import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +33,25 @@ public class PostService {
     private final PostRedisService redisService;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private RedisTemplate<String, Integer> redisTemplate;
+
+    private static final String VIEW_COUNT_KEY_PREFIX = "post:count:";
+
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    @Transactional
+    public void updateViewCounts(){
+        List<PostDomain> allPorts = postRepository.findAll();
+        for(PostDomain post : allPorts) {
+            String key = VIEW_COUNT_KEY_PREFIX + post.getId();
+            Integer viewCount = redisTemplate.opsForValue().get(key);
+
+            if(viewCount != null && viewCount > 0) {
+                post.setView(post.getView() + viewCount); // 데이터베이승 view 업데이트
+                postRepository.save(post); // 저장
+                redisTemplate.delete(key); // Redis의 값 초기화
+            }
+        }
+    }
 
 
     // 모든 게시물 조회
@@ -37,8 +61,8 @@ public class PostService {
         return posts.stream().map(post -> {
             Map<String, Object> postMap = new HashMap<>();
             postMap.put("post", post);
-            postMap.put("hearts", redisService.getPostHearts(String.valueOf(post.getId())));
-            postMap.put("views", redisService.getPostViews(String.valueOf(post.getId())));
+            postMap.put("hearts", redisService.getPostHearts((post.getId())));
+            postMap.put("views", redisService.getViewCount(post.getId()));
             return postMap;
         }).collect(Collectors.toList());
     }
@@ -48,7 +72,7 @@ public class PostService {
         PostDomain post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         // 게시물 조회수 증가
-        redisService.incrementPostViews(String.valueOf(postId)); // postId를 문자열로 변환하여 전달
+        redisService.incrementViewCount(postId); // postId를 문자열로 변환하여 전달
         return post;
     }
 
@@ -155,4 +179,5 @@ public class PostService {
         // 게시물 하트 여부 확인
         return redisService.isPostHearted(userId, postId);
     }
+
 }

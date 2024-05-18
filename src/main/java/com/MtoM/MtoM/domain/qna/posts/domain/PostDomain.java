@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -25,11 +26,20 @@ public class PostDomain {
     @Column(name = "img")
     private String img;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     private String hashtags;
+
+    @Column(columnDefinition = "integer default 0")
+    private int view;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OrderBy("id asc") // 댓글 정렬
+    private List<PostCommentDomain> comments;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
