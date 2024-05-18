@@ -39,6 +39,11 @@ public class S3Service {
         uploadFileToS3(fileName, file);
     }
 
+    public String uploadImage(MultipartFile file, String type) throws IOException {
+        String fileName = generateFileName(UUID.randomUUID().toString(), type);
+        return uploadFileToS3(fileName, file);
+    }
+
     private String generateFileName(String id, String type){
         return UUID.randomUUID().toString() + "_" + type + "_" + id;
     }
@@ -64,4 +69,10 @@ public class S3Service {
         if(!userRepository.existsById(id))
             throw new IDNotFoundException("id not found", ErrorCode.ID_NOTFOUND);
     }
+
+    public void deleteImage(String imageUrl) {
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        amazonS3.deleteObject(bucketName, fileName);
+    }
+
 }
