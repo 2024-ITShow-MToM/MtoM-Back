@@ -69,4 +69,10 @@ public class S3Service {
         if(!userRepository.existsById(id))
             throw new IDNotFoundException("id not found", ErrorCode.ID_NOTFOUND);
     }
+
+    public void deleteImage(String imageUrl) {
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        amazonS3.deleteObject(bucketName, fileName);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.qna.posts.service;
 
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
+import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
@@ -88,25 +89,40 @@ public class PostService {
 
 
     // 게시물 수정
-    public ResponseEntity<String> updatePost(Long postId, PostDomain updatedPost, String userId) {
+    public ResponseEntity<String> updatePost(Long postId, UpdatePostDTO updatedPostDTO, String userId) {
         PostDomain existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         if (!existingPost.getUser().getId().equals(userId)) {
             throw new RuntimeException("해당 사용자는 게시물을 수정할 권한이 없습니다.");
         }
-        existingPost.setTitle(updatedPost.getTitle());
-        existingPost.setContent(updatedPost.getContent());
-        existingPost.setImg(updatedPost.getImg());
-        existingPost.setHashtags(updatedPost.getHashtags());
+
+        existingPost.setTitle(updatedPostDTO.getTitle());
+        existingPost.setContent(updatedPostDTO.getContent());
+        existingPost.setHashtags(updatedPostDTO.getHashtags());
+
+        MultipartFile imgFile = updatedPostDTO.getImg();
+        if (imgFile != null && !imgFile.isEmpty()) {
+            try {
+                if (existingPost.getImg() != null) {
+                    s3Service.deleteImage(existingPost.getImg());
+                }
+                String imgUrl = s3Service.uploadImage(imgFile, "post");
+                existingPost.setImg(imgUrl);
+            } catch (IOException e) {
+                return new ResponseEntity<>("{\"message\": \"이미지 업로드 중 오류가 발생했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
         postRepository.save(existingPost);
 
-        // 수정 완료 메시지를 JSON 형식으로 반환
         String responseJson = "{"
                 + "\"message\": \"게시물이 성공적으로 수정되었습니다.\""
                 + "}";
 
         return new ResponseEntity<>(responseJson, HttpStatus.OK);
     }
+
+
 
     // 게시물 삭제
     public ResponseEntity<String> deletePost(Long postId, String userId) {
@@ -115,15 +131,20 @@ public class PostService {
         if (!existingPost.getUser().getId().equals(userId)) {
             throw new RuntimeException("해당 사용자는 게시물을 삭제할 권한이 없습니다.");
         }
+
+        if (existingPost.getImg() != null) {
+            s3Service.deleteImage(existingPost.getImg());
+        }
+
         postRepository.deleteById(postId);
 
-        // 삭제 완료 메시지를 JSON 형식으로 반환
         String responseJson = "{"
                 + "\"message\": \"게시물이 성공적으로 삭제되었습니다.\""
                 + "}";
 
         return new ResponseEntity<>(responseJson, HttpStatus.OK);
     }
+
 
     public void togglePostHeart(String userId, Long postId) { // userId를 문자열로 사용
         // 게시물 하트 토글

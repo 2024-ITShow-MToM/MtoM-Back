@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.qna.posts.controller;
 
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
+import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +43,11 @@ public class PostController {
         return new ResponseEntity<>(response.getBody(), response.getStatusCode());
     }
 
-
     // 게시물 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updatePost(@PathVariable("id") Long id, @RequestBody PostDomain post, @RequestParam String userId) {
+    public ResponseEntity<String> updatePost(@PathVariable("id") Long id, @ModelAttribute UpdatePostDTO postDTO, @RequestParam String userId) {
         try {
-            ResponseEntity<String> response = postService.updatePost(id, post, userId);
+            ResponseEntity<String> response = postService.updatePost(id, postDTO, userId);
             return new ResponseEntity<>(response.getBody(), response.getStatusCode());
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
