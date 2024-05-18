@@ -35,7 +35,7 @@ public class PostService {
     private final S3Service s3Service;
     private RedisTemplate<String, Integer> redisTemplate;
 
-    private static final String VIEW_COUNT_KEY_PREFIX = "viewCount::";
+    private static final String VIEW_COUNT_KEY_PREFIX = "post:count:";
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
     @Transactional
@@ -61,7 +61,7 @@ public class PostService {
         return posts.stream().map(post -> {
             Map<String, Object> postMap = new HashMap<>();
             postMap.put("post", post);
-            postMap.put("hearts", redisService.getPostHearts(String.valueOf(post.getId())));
+            postMap.put("hearts", redisService.getPostHearts((post.getId())));
             postMap.put("views", redisService.getViewCount(post.getId()));
             return postMap;
         }).collect(Collectors.toList());
