@@ -1,14 +1,14 @@
-package com.MtoM.MtoM.domain.qna.post_comment.service;
+package com.MtoM.MtoM.domain.qna.posts.service;
 
-import com.MtoM.MtoM.domain.qna.post_comment.domain.PostCommentDomain;
-import com.MtoM.MtoM.domain.qna.post_comment.dto.CreatePostComment;
-import com.MtoM.MtoM.domain.qna.post_comment.repository.PostCommentRepository;
+import com.MtoM.MtoM.domain.qna.posts.domain.PostCommentDomain;
+import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostComment;
+import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostComment;
+import com.MtoM.MtoM.domain.qna.posts.repository.PostCommentRepository;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -38,13 +38,16 @@ public class PostCommentService {
         postCommentRepository.save(postComment);
     }
 
-    public boolean updateComment(String userId, Long commentId, String content) {
+    public boolean updateComment(String userId, Long commentId, UpdatePostComment updateDTO) {
         Optional<PostCommentDomain> commentOptional = postCommentRepository.findById(commentId);
         if (commentOptional.isPresent()) {
             PostCommentDomain comment = commentOptional.get();
             // userId를 사용하여 댓글 작성자 확인
             if (userId.equals(comment.getUser().getId())) {
-                comment.setContent(content);
+                // 업데이트할 필드를 선택적으로 업데이트
+                if (updateDTO.getContent() != null) {
+                    comment.setContent(updateDTO.getContent());
+                }
                 postCommentRepository.save(comment);
                 return true;
             }

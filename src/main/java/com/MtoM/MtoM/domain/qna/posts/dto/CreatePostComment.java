@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.qna.post_comment.dto;
+package com.MtoM.MtoM.domain.qna.posts.dto;
 
 import lombok.Data;
 
