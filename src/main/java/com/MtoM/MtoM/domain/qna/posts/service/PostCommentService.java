@@ -8,9 +8,13 @@ import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,7 +24,26 @@ public class PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final PostCommentRedisService postCommentRedisService;
 
+    private static final String HEART_COUNT_KEY_PREFIX = "post:comment:heart";
+    private final RedisTemplate<String,Integer> redisTemplate;
+
+    @Scheduled(cron = "0 0 0 * * *") //매일 자정에 실행
+    @Transactional
+    public void updateHeartCounts() {
+        List<PostCommentDomain> allComments = postCommentRepository.findAll();
+        for(PostCommentDomain comment : allComments) {
+            String key = HEART_COUNT_KEY_PREFIX + comment.getId();
+            Integer heartCount = redisTemplate.opsForValue().get(key);
+
+            if(heartCount != null && heartCount > 0) {
+                comment.setHearts(comment.getHearts());
+                postCommentRepository.save(comment);
+                redisTemplate.delete(key); // Redis값 초기화
+            }
+        }
+    }
 
     public void createComment(CreatePostComment commentDTO) {
         PostCommentDomain postComment = new PostCommentDomain();
@@ -66,6 +89,16 @@ public class PostCommentService {
             }
         }
         return false;
+    }
+
+    public void togglePostCommentHeart(String userId, Long commentId) {
+        // 게시물 댓글 하트 토글
+        postCommentRedisService.togglePostCommentHeart(userId, commentId);
+    }
+
+    public void getPostCommentHeartCount(Long commentId) {
+        // 게시물 댓글 하트 토글
+        postCommentRedisService.getPostCommentHearts(commentId);
     }
 
 }

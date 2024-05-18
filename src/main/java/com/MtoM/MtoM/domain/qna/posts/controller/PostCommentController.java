@@ -47,4 +47,10 @@ public class PostCommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("댓글 삭제 권한이 없습니다.");
         }
     }
+
+    @PostMapping("/{commentId}/heart")
+    public ResponseEntity<String> togglePostCommentHeart(@PathVariable Long commentId, @RequestParam String userId) {
+        postCommentService.togglePostCommentHeart(userId, commentId);
+        return ResponseEntity.ok("Heart toggled successfully.");
+    }
 }

@@ -24,7 +24,6 @@ public class PostCommentDomain {
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
-    @JsonIgnore
     private PostDomain post;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,6 +35,9 @@ public class PostCommentDomain {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(columnDefinition = "integer default 0")
+    private int hearts;
 
     @PrePersist
     protected void onCreate() {
