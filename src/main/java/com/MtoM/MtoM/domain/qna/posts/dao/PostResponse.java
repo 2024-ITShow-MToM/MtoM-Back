@@ -7,14 +7,14 @@ import java.util.List;
 @Data
 public class PostResponse {
     private Long postId;
+    private String img;
+    private List<PostUserResponse> user;
     private String title;
     private String content;
-    private String img;
+    private String createdAt;
+    private int view;
     private String hashtags;
-    private String major;
-    private String userName;
-    private String userProfile;
-    private int commentCount;
     private int heartCount;
+    private int commentCount;
     private List<CommentResponse> comments;
 }

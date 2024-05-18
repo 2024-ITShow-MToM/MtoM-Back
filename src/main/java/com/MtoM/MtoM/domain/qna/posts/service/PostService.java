@@ -2,16 +2,18 @@ package com.MtoM.MtoM.domain.qna.posts.service;
 
 import com.MtoM.MtoM.domain.qna.posts.dao.CommentResponse;
 import com.MtoM.MtoM.domain.qna.posts.dao.PostResponse;
+import com.MtoM.MtoM.domain.qna.posts.dao.PostUserResponse;
+import com.MtoM.MtoM.domain.qna.posts.domain.PostCommentDomain;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostDTO;
+import com.MtoM.MtoM.domain.qna.posts.repository.PostCommentRepository;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +37,9 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostRedisService redisService;
+    private final PostCommentRedisService postCommentRedisService;
     private final UserRepository userRepository;
+    private final PostCommentRepository postCommentRepository;
     private final S3Service s3Service;
     private RedisTemplate<String, Integer> redisTemplate;
 
@@ -46,7 +54,7 @@ public class PostService {
             Integer viewCount = redisTemplate.opsForValue().get(key);
 
             if(viewCount != null && viewCount > 0) {
-                post.setView(post.getView() + viewCount); // 데이터베이승 view 업데이트
+                post.setViews(post.getViews() + viewCount); // 데이터베이승 view 업데이트
                 postRepository.save(post); // 저장
                 redisTemplate.delete(key); // Redis의 값 초기화
             }
@@ -180,4 +188,85 @@ public class PostService {
         return redisService.isPostHearted(userId, postId);
     }
 
+    // 게시물 상세
+    public PostResponse getPostDetail(Long id) {
+        PostDomain post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid post ID"));
+
+        // 게시물 조회수 증가
+        redisService.incrementViewCount(id);
+
+        List<PostCommentDomain> comments = postCommentRepository.findByPostId(id);
+
+        List<CommentResponse> commentResponses = comments.stream().map(this::convertToCommentResponse).collect(Collectors.toList());
+
+
+        PostUserResponse userResponse = new PostUserResponse();
+        UserDomain user = post.getUser();
+        String profileImgURL = s3Service.getImagePath(user.getId());
+
+        userResponse.setProfile(profileImgURL);
+        userResponse.setName(user.getStudent_id() + " " + user.getName());
+        userResponse.setMajor(user.getMajor().toString());
+        userResponse.setUserId(user.getId());
+
+        PostResponse response = new PostResponse();
+        response.setPostId(post.getId());
+        response.setTitle(post.getTitle());
+        response.setContent(post.getContent());
+        response.setImg(post.getImg());
+        response.setHashtags(post.getHashtags());
+        response.setCommentCount(comments.size());
+        response.setHeartCount(redisService.getPostHearts(post.getId()));
+        response.setView(redisService.getViewCount(post.getId()));
+        response.setCreatedAt(formatDate(post.getCreatedAt()));
+        response.setUser(List.of(userResponse));
+        response.setComments(commentResponses);
+
+
+        return response;
+    }
+
+    private CommentResponse convertToCommentResponse(PostCommentDomain comment) {
+        CommentResponse response = new CommentResponse();
+        response.setCommentId(comment.getId());
+        response.setContent(comment.getContent());
+        response.setTime(formatTimeAgo(comment.getCreatedAt()));
+        response.setHeartCount(postCommentRedisService.getPostCommentHearts(comment.getId()));
+
+        UserDomain user = comment.getUser();
+        // TODO : null 일때 기본 프로필 되도록 수정하기
+        String profileImgURL = s3Service.getImagePath(user.getId());
+        response.setUserId(user.getId());
+        response.setProfile(profileImgURL);
+        response.setName(user.getStudent_id() + " " + user.getName());
+        return response;
+    }
+
+    private String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        return dateTime.format(formatter);
+    }
+
+    private String formatTimeAgo(LocalDateTime createdAt) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(createdAt, now);
+
+        if (duration.toMinutes() < 1) {
+            return "방금 전";
+        } else if (duration.toMinutes() < 60) {
+            return duration.toMinutes() + "분 전";
+        } else if (duration.toHours() < 24) {
+            return duration.toHours() + "시간 전";
+        } else if (duration.toDays() < 2) {
+            return "하루 전";
+        } else if (duration.toDays() < 7) {
+            return duration.toDays() + "일 전";
+        } else if (duration.toDays() < 30) {
+            return duration.toDays() / 7 + "주 전";
+        } else if (duration.toDays() < 365) {
+            return duration.toDays() / 30 + "달 전";
+        } else {
+            return duration.toDays() / 365 + "년 전";
+        }
+    }
 }

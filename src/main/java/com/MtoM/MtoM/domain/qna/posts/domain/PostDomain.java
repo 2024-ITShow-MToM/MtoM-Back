@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.qna.posts.domain;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -35,11 +36,13 @@ public class PostDomain {
     private String hashtags;
 
     @Column(columnDefinition = "integer default 0")
-    private int view;
+    private int views;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @OrderBy("id asc") // 댓글 정렬
+    @OrderBy("id asc")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // 추가
     private List<PostCommentDomain> comments;
+
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
