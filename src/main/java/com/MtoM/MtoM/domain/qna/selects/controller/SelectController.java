@@ -2,11 +2,10 @@ package com.MtoM.MtoM.domain.qna.selects.controller;
 
 import com.MtoM.MtoM.domain.qna.selects.domain.SelectDomain;
 import com.MtoM.MtoM.domain.qna.selects.dto.CreateSelectDTO;
-import com.MtoM.MtoM.domain.qna.selects.dto.SelectWithCountsDTO;
-import com.MtoM.MtoM.domain.qna.selects.dto.VoteDTO;
-import com.MtoM.MtoM.domain.qna.selects.service.SelectRedisService;
 import com.MtoM.MtoM.domain.qna.selects.service.SelectService;
+import com.MtoM.MtoM.domain.qna.selects.service.VoteService;
 import com.MtoM.MtoM.global.ResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +14,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/selects")
+@RequiredArgsConstructor
 public class SelectController {
-    @Autowired
-    private SelectService selectService;
 
     @Autowired
-    private SelectRedisService redisService;
+    private SelectService selectService;
+    @Autowired
+    private final VoteService voteService;
+
 
     @GetMapping
     public ResponseEntity<ResponseMessage<List<SelectDomain>>> getAllSelects() {
@@ -36,19 +31,6 @@ public class SelectController {
         return new ResponseEntity<>(new ResponseMessage<>("Selects retrieved successfully", selects), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseMessage<SelectWithCountsDTO>> getSelectById(@PathVariable Long id) {
-        Optional<SelectDomain> select = selectService.getSelectById(id);
-        if (select.isPresent()) {
-            redisService.incrementViewCount(id);
-            int viewCount = redisService.getViewCount(id);
-            int heartCount = redisService.getPostHearts(id);
-            SelectWithCountsDTO selectWithCounts = new SelectWithCountsDTO(select.get(), viewCount, heartCount);
-            return new ResponseEntity<>(new ResponseMessage<>("Select retrieved successfully", selectWithCounts), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ResponseMessage<>("Select not found", null), HttpStatus.NOT_FOUND);
-        }
-    }
 
     @PostMapping
     public ResponseEntity<ResponseMessage<SelectDomain>> createSelect(@RequestBody CreateSelectDTO select) {
@@ -77,9 +59,17 @@ public class SelectController {
         }
     }
 
-    @PostMapping("/{id}/heart")
-    public ResponseEntity<String> toggleHeart(@PathVariable Long id, @RequestParam String userId) {
-        redisService.togglePostHeart(userId, id);
-        return ResponseEntity.ok("Heart toggled successfully");
+
+    // 사용자 투표를 처리하는 엔드포인트
+    @PostMapping("/{selectId}/{option}")
+    public void vote(@PathVariable Long selectId, @PathVariable String option, @RequestParam String userId) {
+        voteService.vote(selectId, option, userId);
     }
+
+    // 투표 결과를 조회하는 엔드포인트
+    @GetMapping("/{selectId}/results")
+    public Map<Object, Object> getVoteResults(@PathVariable Long selectId) {
+        return voteService.getVoteResult(selectId);
+    }
+
 }

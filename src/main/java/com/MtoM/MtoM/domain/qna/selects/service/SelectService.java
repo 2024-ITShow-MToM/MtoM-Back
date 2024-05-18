@@ -78,7 +78,47 @@ public class SelectService {
         }
     }
 
-    public void deleteSelect(Long id) {
-        selectRepository.deleteById(id);
+    public SelectDomain voteForOption(Long selectId, int optionNumber) {
+        Optional<SelectDomain> optionalSelect = selectRepository.findById(selectId);
+        if (optionalSelect.isPresent()) {
+            SelectDomain select = optionalSelect.get();
+            if (optionNumber == 1) {
+                select.setOption1Percent(select.getOption1Percent() + 1);
+            } else if (optionNumber == 2) {
+                select.setOption2Percent(select.getOption2Percent() + 1);
+            } else {
+                throw new IllegalArgumentException("잘못된 옵션 번호입니다.");
+            }
+            selectRepository.save(select);
+            return select;
+        } else {
+            throw new RuntimeException("해당 선택지가 없습니다.");
+        }
+    }
+
+    public int getOptionPercent(Long selectId, int optionNumber) {
+        Optional<SelectDomain> optionalSelect = selectRepository.findById(selectId);
+        if (optionalSelect.isPresent()) {
+            SelectDomain select = optionalSelect.get();
+            if (optionNumber == 1) {
+                return select.getOption1Percent();
+            } else if (optionNumber == 2) {
+                return select.getOption2Percent();
+            } else {
+                throw new IllegalArgumentException("잘못된 옵션 번호입니다.");
+            }
+        } else {
+            throw new RuntimeException("해당 선택지가 없습니다.");
+        }
+    }
+
+    public int getTotalVotes(Long selectId) {
+        Optional<SelectDomain> optionalSelect = selectRepository.findById(selectId);
+        if (optionalSelect.isPresent()) {
+            SelectDomain select = optionalSelect.get();
+            return select.getOption1Percent() + select.getOption2Percent();
+        } else {
+            throw new RuntimeException("해당 선택지가 없습니다.");
+        }
     }
 }
