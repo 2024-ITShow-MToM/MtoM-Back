@@ -34,10 +34,10 @@ public class SelectDomain {
     @Column(name = "option2")
     private String option2;
 
-    @Column(name = "option1_percent")
+    @Column(name = "option1_percent", columnDefinition = "integer default 0")
     private int option1Percent;
 
-    @Column(name = "option2_percent")
+    @Column(name = "option2_percent", columnDefinition = "integer default 0")
     private int option2Percent;
 
     @Column(name = "created_at", updatable = false)
