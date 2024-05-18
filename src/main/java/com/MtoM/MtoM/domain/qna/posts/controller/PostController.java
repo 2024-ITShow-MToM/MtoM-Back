@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.qna.posts.controller;
 
+import com.MtoM.MtoM.domain.qna.posts.dao.PostResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
 import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostDTO;
@@ -68,4 +69,5 @@ public class PostController {
         postService.togglePostHeart(userId, postId);
         return ResponseEntity.ok("Heart toggled successfully");
     }
+
 }
