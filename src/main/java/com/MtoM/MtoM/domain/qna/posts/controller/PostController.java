@@ -36,6 +36,12 @@ public class PostController {
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
+    @GetMapping("/details/{id}")
+    public ResponseEntity<PostResponse> getPostDetailsById(@PathVariable("id") Long id) {
+        PostResponse response = postService.getPostDetail(id);
+        return ResponseEntity.ok(response);
+    }
+
     // 게시물 생성
     @PostMapping
     public ResponseEntity<String> createPost(@ModelAttribute CreatePostDTO postDTO) {

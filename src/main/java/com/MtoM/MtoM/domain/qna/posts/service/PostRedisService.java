@@ -17,7 +17,7 @@ public class PostRedisService {
 
     // Redis 키 접두사 상수 선언
     private static final String VIEW_COUNT_KEY_PREFIX = "post:view:";
-    private static final String HEART_COUNT_KEY_PREFIX = "post:count:";
+    private static final String HEART_COUNT_KEY_PREFIX = "post:heart:";
 
     private final RedisTemplate<String, Integer> redisTemplate; // RedisTemplate의 값 타입을 Integer로 변경
     private final PostRepository postRepository;
@@ -44,6 +44,7 @@ public class PostRedisService {
             throw new IllegalArgumentException("Invalid post ID: " + postId);
         }
 
+        // TODO : 하트 누른 게시판 나중에 DB에 추가
         PostDomain post = postOpt.get();
         String postCreatorId = post.getUser().getId(); // 게시물 작성자의 userId 가져오기
 
@@ -57,7 +58,7 @@ public class PostRedisService {
     }
 
 
-    // 게시물의 총 종하용 수를 반호나
+    // 게시물의 총 좋아요 수를 반환
     public Integer getPostHearts(Long postId) {
         String key = HEART_COUNT_KEY_PREFIX + postId;
         return Math.toIntExact(redisTemplate.opsForHash().size(key)); // 좋아요 수를 해시 크기로 반환
