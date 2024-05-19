@@ -21,9 +21,23 @@ public class QnaController {
     @Autowired
     private VoteService voteService;
 
+//    @GetMapping("/posts")
+//    public List<QnaPostResponse> getQnaPosts() {
+//        return qnaCategoryService.getQnaPosts();
+//    }
+
     @GetMapping("/posts")
-    public List<QnaPostResponse> getQnaPosts() {
-        return qnaCategoryService.getQnaPosts();
+    public List<QnaPostResponse> getQnaPosts(@RequestParam String sortBy) {
+        switch (sortBy) {
+            case "comments":
+                return qnaCategoryService.getQnaPostsSortedByComments();
+            case "hearts":
+                return qnaCategoryService.getQnaPostsSortedByHearts();
+            case "views":
+                return qnaCategoryService.getQnaPostsSortedByViews();
+            default:
+                throw new IllegalArgumentException("Invalid sortBy parameter");
+        }
     }
 
     @GetMapping("/selects")

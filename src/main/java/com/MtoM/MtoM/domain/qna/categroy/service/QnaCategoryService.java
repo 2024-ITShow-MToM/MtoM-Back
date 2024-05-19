@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +71,46 @@ public class QnaCategoryService {
         this.postCommentRepository = postCommentRepository;
         this.s3Service = s3Service;
     }
+    public List<QnaPostResponse> getQnaPostsSortedByComments() {
+        List<PostDomain> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(post -> createQnaPostResponse(post))
+                .sorted(Comparator.comparing(QnaPostResponse::getCommentCount).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<QnaPostResponse> getQnaPostsSortedByHearts() {
+        List<PostDomain> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(post -> createQnaPostResponse(post))
+                .sorted(Comparator.comparing(QnaPostResponse::getHeartCount).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public List<QnaPostResponse> getQnaPostsSortedByViews() {
+        List<PostDomain> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(post -> createQnaPostResponse(post))
+                .sorted(Comparator.comparing(QnaPostResponse::getViewCount).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private QnaPostResponse createQnaPostResponse(PostDomain post) {
+        List<PostCommentDomain> comments = postCommentRepository.findByPostId(post.getId());
+        QnaPostResponse response = new QnaPostResponse();
+        response.setPostId(post.getId());
+        response.setTitle(post.getTitle());
+        response.setImg(post.getImg());
+        response.setTags(post.getHashtags());
+        response.setCommentCount(comments.size());
+        response.setHeartCount(redisService.getPostHearts(post.getId()));
+        response.setViewCount(redisService.getViewCount(post.getId()));
+        response.setDate(formatDate(post.getCreatedAt()));
+        return response;
+    }
 
     // 게시물 리스트
     public List<QnaPostResponse> getQnaPosts() {
@@ -94,7 +131,6 @@ public class QnaCategoryService {
             return response;
         }).collect(Collectors.toList());
     }
-
     public List<QnaSelectResponse> getQnaSelects() {
         List<SelectDomain> selects = selectRepository.findAll();
 
