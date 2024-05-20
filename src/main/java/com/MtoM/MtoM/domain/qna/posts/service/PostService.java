@@ -1,6 +1,7 @@
 package com.MtoM.MtoM.domain.qna.posts.service;
 
 import com.MtoM.MtoM.domain.qna.posts.dao.CommentResponse;
+import com.MtoM.MtoM.domain.qna.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.qna.posts.dao.PostResponse;
 import com.MtoM.MtoM.domain.qna.posts.dao.PostUserResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostCommentDomain;
@@ -25,10 +26,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -241,6 +239,48 @@ public class PostService {
         response.setName(user.getStudent_id() + " " + user.getName());
         return response;
     }
+
+    public PostHeartUsersResponse getPostHeartUsers(Long id) {
+        PostDomain post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid post ID"));
+
+        PostHeartUsersResponse response = new PostHeartUsersResponse();
+        response.setHeartCount(redisService.getPostHearts(post.getId()));
+
+        Set<String> userIds = redisService.getPostHeartedUsers(id);
+
+        List<PostUserResponse> userResponses = new ArrayList<>();
+        for (String userIdStr : userIds) {
+            String userId;
+            try {
+                userId = userIdStr;
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid user ID format: " + userIdStr);
+                continue;
+            }
+
+            try {
+                UserDomain user = userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
+
+                String profileImgURL = s3Service.getImagePath(user.getId());
+                PostUserResponse userResponse = new PostUserResponse();
+                userResponse.setUserId(user.getId());
+                userResponse.setProfile(profileImgURL);
+                userResponse.setMajor(user.getMajor().toString());
+                userResponse.setName(user.getStudent_id() + " " + user.getName());
+
+                userResponses.add(userResponse);
+            } catch (IllegalArgumentException e) {
+                System.err.println("User not found for ID: " + userId);
+            }
+        }
+
+        response.setUsers(userResponses);
+        return response;
+    }
+
+
 
     private String formatDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");

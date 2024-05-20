@@ -3,13 +3,13 @@ package com.MtoM.MtoM.domain.qna.posts.service;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,5 +69,14 @@ public class PostRedisService {
         String key = HEART_COUNT_KEY_PREFIX + postId;
         redisTemplate.opsForHash().hasKey(key, userId); // Redis 키 생성
         return redisTemplate.opsForHash().hasKey(key, userId); // 해당 사용자가 좋아요를 눌렀는지 확인(눌렀다면 true, 그렇지 않다면 false 반환)
+    }
+
+    // 특정 게시물에 좋아요를 누른 사용자 ID 목록을 반환하는 메서드
+    public Set<String> getPostHeartedUsers(Long postId) {
+        String key = HEART_COUNT_KEY_PREFIX + postId;
+        return redisTemplate.opsForHash().keys(key)
+                .stream()
+                .map(Object::toString) // Ensure all keys are converted to String
+                .collect(Collectors.toSet());
     }
 }
