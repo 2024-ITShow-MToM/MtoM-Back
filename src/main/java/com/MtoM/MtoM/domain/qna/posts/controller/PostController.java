@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.qna.posts.controller;
 
+import com.MtoM.MtoM.domain.qna.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.qna.posts.dao.PostResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -70,10 +72,18 @@ public class PostController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
+
+    // 게시물 하트 누르기
     @PostMapping("/{postId}/heart")
     public ResponseEntity<String> togglePostHeart(@PathVariable Long postId, @RequestParam String userId) {
         postService.togglePostHeart(userId, postId);
         return ResponseEntity.ok("Heart toggled successfully");
     }
 
+
+    // 게시물 하트 누른 사람 조회
+    @GetMapping("/{id}/hearts/users")
+    public PostHeartUsersResponse getPostHeartUsers(@PathVariable Long id) {
+        return postService.getPostHeartUsers(id);
+    }
 }

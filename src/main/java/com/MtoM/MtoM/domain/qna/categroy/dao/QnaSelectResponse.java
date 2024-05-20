@@ -11,5 +11,6 @@ public class QnaSelectResponse {
     private String title;
     private String date;
     private Long participants;
+    private String userSelect; // 유저가 선택한 옵션 변환
     private List<VoteOptionResponse> options;
 }
