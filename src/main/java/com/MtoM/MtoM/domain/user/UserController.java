@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.user.controller;
+package com.MtoM.MtoM.domain.user;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.*;
