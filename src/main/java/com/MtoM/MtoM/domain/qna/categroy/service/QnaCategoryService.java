@@ -104,11 +104,11 @@ public class QnaCategoryService {
         response.setPostId(post.getId());
         response.setTitle(post.getTitle());
         response.setImg(post.getImg());
-        response.setTags(post.getHashtags());
+        response.setHashtags(post.getHashtags());
         response.setCommentCount(comments.size());
         response.setHeartCount(redisService.getPostHearts(post.getId()));
         response.setViewCount(redisService.getViewCount(post.getId()));
-        response.setDate(formatDate(post.getCreatedAt()));
+        response.setCreatedAt(formatDate(post.getCreatedAt()));
         return response;
     }
 
@@ -123,27 +123,27 @@ public class QnaCategoryService {
             response.setPostId(post.getId());
             response.setTitle(post.getTitle());
             response.setImg(post.getImg());
-            response.setTags(post.getHashtags());
+            response.setHashtags(post.getHashtags());
             response.setCommentCount(comments.size());
             response.setHeartCount(redisService.getPostHearts(post.getId()));
             response.setViewCount(redisService.getViewCount(post.getId()));
-            response.setDate(formatDate(post.getCreatedAt()));
+            response.setCreatedAt(formatDate(post.getCreatedAt()));
             return response;
         }).collect(Collectors.toList());
     }
-    public List<QnaSelectResponse> getQnaSelects() {
-        List<SelectDomain> selects = selectRepository.findAll();
-
-        return selects.stream().map(select -> {
-            QnaSelectResponse response = new QnaSelectResponse();
-            response.setSelectId(select.getId());
-            response.setTitle(select.getTitle());
-            response.setParticipants(getVotePercentage(select.getId()).getParticipants());
-            response.setOptions(getVotePercentage(select.getId()).getOptions());
-            response.setDate(formatDate(select.getCreatedAt()));
-            return response;
-        }).collect(Collectors.toList());
-    }
+//    public List<QnaSelectResponse> getQnaSelects() {
+//        List<SelectDomain> selects = selectRepository.findAll();
+//
+//        return selects.stream().map(select -> {
+//            QnaSelectResponse response = new QnaSelectResponse();
+//            response.setSelectId(select.getId());
+//            response.setTitle(select.getTitle());
+//            response.setParticipants(getVotePercentage(select.getId()).getParticipants());
+//            response.setOptions(getVotePercentage(select.getId()).getOptions());
+//            response.setDate(formatDate(select.getCreatedAt()));
+//            return response;
+//        }).collect(Collectors.toList());
+//    }
 
     private String formatDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -151,7 +151,7 @@ public class QnaCategoryService {
     }
 
 
-    public QnaSelectResponse getVotePercentage(Long selectId) {
+    public QnaSelectResponse getVotePercentage(Long selectId, String userId) {
         String voteCountKey = VOTE_COUNT_PREFIX + selectId;
 
         Optional<SelectDomain> selectDomainOpt = selectRepository.findById(selectId);
