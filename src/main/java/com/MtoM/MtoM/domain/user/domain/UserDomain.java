@@ -57,6 +57,9 @@ public class UserDomain {
     @Column
     private String imogi;
 
+    @Column
+    private String mentoring_topics;
+
     @JsonIgnore
     @Column
     private String social;
