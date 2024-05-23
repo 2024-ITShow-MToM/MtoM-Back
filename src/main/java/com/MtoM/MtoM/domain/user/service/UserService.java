@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.user.service;
 
+import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.FindByUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -53,7 +55,9 @@ public class UserService {
         user.setImogi(requestDto.getImogi());
 
         userRepository.save(user);
-        skillRepository.save(requestDto.toSkillEntity());
+        List<SkillDomain> skillDomainList = requestDto.toSkillEntity();
+        for(SkillDomain skill : skillDomainList)
+            skillRepository.save(skill);
     }
 
     public String loginUser(LoginUserRequestDto requestDto){

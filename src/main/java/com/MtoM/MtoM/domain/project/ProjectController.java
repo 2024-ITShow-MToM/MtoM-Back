@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.project.controller;
+package com.MtoM.MtoM.domain.project;
 
 import com.MtoM.MtoM.domain.project.dto.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.service.ProjectService;

@@ -7,6 +7,9 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import lombok.Getter;
 import org.apache.catalina.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 public class RegisterProfileInfoDto {
     private UserDomain userId;
@@ -17,16 +20,17 @@ public class RegisterProfileInfoDto {
     private String phonenumber;
     private Major major;
     private String mbti;
-    private String skill_name;
-    private Integer skill_score;
+    private List<Skill> skills;
     private String personal;
     private String imogi;
 
-    public SkillDomain toSkillEntity(){
-        return SkillDomain.builder()
-                .user(userId)
-                .skill_name(skill_name)
-                .skill_score(skill_score)
-                .build();
+    public List<SkillDomain> toSkillEntity(){
+        return skills.stream()
+                .map(skill -> SkillDomain.builder()
+                        .user(userId)
+                        .skill_name(skill.getSkill_name())
+                        .skill_score(skill.getSkill_score())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
