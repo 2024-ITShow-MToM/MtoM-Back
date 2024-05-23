@@ -18,6 +18,7 @@ public class VoteService {
     private static final String USER_VOTES_PREFIX = "user:votes:";
     @Autowired
     private final SelectRepository selectRepository;
+
     public VoteService(RedisTemplate<String, String> redisTemplate, SelectRepository selectRepository) {
         this.redisTemplate = redisTemplate;
         this.selectRepository = selectRepository;
@@ -50,7 +51,7 @@ public class VoteService {
     }
 
     public Map<String, Double> getVotePercentages(Long selectId) {
-        Map<String, Double> percentages = new HashMap<>();
+        LinkedHashMap<String, Double> percentages = new LinkedHashMap<>();
 
         String voteCountKey = VOTE_COUNT_PREFIX + selectId;
         Map<Object, Object> voteCounts = redisTemplate.opsForHash().entries(voteCountKey);
@@ -75,18 +76,15 @@ public class VoteService {
         String option2Content = selectDomain.getOption2();
 
         // 첫 번째 옵션의 퍼센트 계산
-        double countOption1 = Double.parseDouble(voteCounts.get("option1").toString());
+        double countOption1 = Double.parseDouble(voteCounts.getOrDefault("option1", "0").toString());
         double percentageOption1 = (countOption1 / totalVotes) * 100;
         percentages.put(option1Content, percentageOption1);
 
         // 두 번째 옵션의 퍼센트 계산
-        double countOption2 = Double.parseDouble(voteCounts.get("option2").toString());
+        double countOption2 = Double.parseDouble(voteCounts.getOrDefault("option2", "0").toString());
         double percentageOption2 = (countOption2 / totalVotes) * 100;
         percentages.put(option2Content, percentageOption2);
 
         return percentages;
     }
-
-
-
 }
