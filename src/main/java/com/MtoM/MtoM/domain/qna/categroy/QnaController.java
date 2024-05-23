@@ -40,10 +40,10 @@ public class QnaController {
         }
     }
 
-    @GetMapping("/selects")
-    public List<QnaSelectResponse> getQnaSelects() {
-        return qnaCategoryService.getQnaSelects();
-    }
+//    @GetMapping("/selects")
+//    public List<QnaSelectResponse> getQnaSelects() {
+//        return qnaCategoryService.getQnaSelects();
+//    }
 
     @GetMapping("/result/{selectId}")
     public Map<String, Double> getVoteResult(@PathVariable Long selectId) {
