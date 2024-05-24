@@ -214,8 +214,7 @@ public class QnaCategoryService {
         return qnaSelectResponses;
     }
 
-
-    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(String userId) {
+    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(String userId, String keyword) {
         List<QnaPostResponse> postResponses = getQnaPosts();
         List<QnaSelectResponse> selectResponses = getAllQnaSelectResponses(userId);
 
@@ -225,22 +224,40 @@ public class QnaCategoryService {
         combinedResponses.addAll(selectResponses);
 
         // 정렬
-        combinedResponses.sort((o1, o2) -> {
-            LocalDateTime createdAt1 = getCreatedAt(o1);
-            LocalDateTime createdAt2 = getCreatedAt(o2);
+        combinedResponses = combinedResponses.stream()
+                .filter(response -> filterByKeyword(response, keyword))
+                .sorted((o1, o2) -> {
+                    LocalDateTime createdAt1 = getCreatedAt(o1);
+                    LocalDateTime createdAt2 = getCreatedAt(o2);
 
-            if (createdAt1 != null && createdAt2 != null) {
-                return -1 * createdAt1.compareTo(createdAt2);
-            } else if (createdAt1 != null) {
-                return -1;
-            } else if (createdAt2 != null) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
+                    if (createdAt1 != null && createdAt2 != null) {
+                        return -1 * createdAt1.compareTo(createdAt2);
+                    } else if (createdAt1 != null) {
+                        return -1;
+                    } else if (createdAt2 != null) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })
+                .collect(Collectors.toList());
 
         return combinedResponses;
+    }
+
+    private boolean filterByKeyword(Object obj, String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return true;
+        }
+        if (obj instanceof QnaPostResponse) {
+            QnaPostResponse post = (QnaPostResponse) obj;
+            return post.getTitle().contains(keyword) ||
+                    post.getHashtags().contains(keyword);
+        } else if (obj instanceof QnaSelectResponse) {
+            QnaSelectResponse select = (QnaSelectResponse) obj;
+            return select.getTitle().contains(keyword);
+        }
+        return false;
     }
 
     // 객체에서 createdAt을 추출하는 메소드
