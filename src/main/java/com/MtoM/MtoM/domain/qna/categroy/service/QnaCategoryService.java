@@ -3,7 +3,6 @@ package com.MtoM.MtoM.domain.qna.categroy.service;
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaPostResponse;
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaSelectResponse;
 import com.MtoM.MtoM.domain.qna.categroy.dao.VoteOptionResponse;
-import com.MtoM.MtoM.domain.qna.posts.dao.CommentResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostCommentDomain;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostCommentRepository;
@@ -13,16 +12,16 @@ import com.MtoM.MtoM.domain.qna.posts.service.PostRedisService;
 import com.MtoM.MtoM.domain.qna.selects.domain.SelectDomain;
 import com.MtoM.MtoM.domain.qna.selects.repository.SelectRepository;
 import com.MtoM.MtoM.domain.qna.selects.service.VoteService;
-import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -214,6 +213,55 @@ public class QnaCategoryService {
 
         return qnaSelectResponses;
     }
+
+
+    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(String userId) {
+        List<QnaPostResponse> postResponses = getQnaPosts();
+        List<QnaSelectResponse> selectResponses = getAllQnaSelectResponses(userId);
+
+        // Post와 Select 응답을 합친 후, createdAt을 기준으로 최신순으로 정렬
+        List<Object> combinedResponses = new ArrayList<>();
+        combinedResponses.addAll(postResponses);
+        combinedResponses.addAll(selectResponses);
+
+        // 정렬
+        combinedResponses.sort((o1, o2) -> {
+            LocalDateTime createdAt1 = getCreatedAt(o1);
+            LocalDateTime createdAt2 = getCreatedAt(o2);
+
+            if (createdAt1 != null && createdAt2 != null) {
+                return -1 * createdAt1.compareTo(createdAt2);
+            } else if (createdAt1 != null) {
+                return -1;
+            } else if (createdAt2 != null) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        return combinedResponses;
+    }
+
+    // 객체에서 createdAt을 추출하는 메소드
+    private LocalDateTime getCreatedAt(Object obj) {
+        if (obj instanceof QnaPostResponse) {
+            String createdAtString = ((QnaPostResponse) obj).getCreatedAt();
+            return parseLocalDateTime(createdAtString);
+        } else if (obj instanceof QnaSelectResponse) {
+            String createdAtString = ((QnaSelectResponse) obj).getCreatedAt();
+            return parseLocalDateTime(createdAtString);
+        }
+        return null;
+    }
+
+    // createdAt 문자열을 LocalDateTime으로 파싱하는 메소드
+    private LocalDateTime parseLocalDateTime(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        java.time.LocalDate localDate = LocalDate.parse(dateString, formatter);
+        return localDate.atStartOfDay();
+    }
+
 
 
 }

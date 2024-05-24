@@ -53,5 +53,9 @@ public class QnaController {
     public Map<String, Double> getVoteResult(@PathVariable Long selectId) {
         return voteService.getVotePercentages(selectId);
     }
+    @GetMapping
+    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(String userId) {
+        return qnaCategoryService.getQnaPostsAndSelectsSortedByCreatedAt(userId);
+    }
 
 }
