@@ -38,6 +38,8 @@ public class QnaController {
                 return qnaCategoryService.getQnaPostsSortedByHearts();
             case "views":
                 return qnaCategoryService.getQnaPostsSortedByViews();
+            case "latest":
+                return qnaCategoryService.getQnaPostsSortedByCreatedAt();
             default:
                 throw new IllegalArgumentException("Invalid sortBy parameter");
         }
@@ -54,8 +56,10 @@ public class QnaController {
         return voteService.getVotePercentages(selectId);
     }
     @GetMapping
-    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(String userId) {
-        return qnaCategoryService.getQnaPostsAndSelectsSortedByCreatedAt(userId);
+    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(
+            @RequestParam String userId,
+            @RequestParam(required = false) String keyword) {
+        return qnaCategoryService.getQnaPostsAndSelectsSortedByCreatedAt(userId,keyword);
     }
 
 }
