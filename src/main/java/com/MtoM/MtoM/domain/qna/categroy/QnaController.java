@@ -4,8 +4,11 @@ import com.MtoM.MtoM.domain.qna.categroy.dao.QnaPostResponse;
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaSelectResponse;
 import com.MtoM.MtoM.domain.qna.categroy.service.QnaCategoryService;
 import com.MtoM.MtoM.domain.qna.selects.service.VoteService;
+import io.lettuce.core.dynamic.annotation.Param;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,14 +43,19 @@ public class QnaController {
         }
     }
 
-//    @GetMapping("/selects")
-//    public List<QnaSelectResponse> getQnaSelects() {
-//        return qnaCategoryService.getQnaSelects();
-//    }
+    @GetMapping("/selects")
+    public List<QnaSelectResponse> getAllQnaSelectResponses(@RequestParam String userId) {
+        return qnaCategoryService.getAllQnaSelectResponses(userId);
+    }
+
 
     @GetMapping("/result/{selectId}")
     public Map<String, Double> getVoteResult(@PathVariable Long selectId) {
         return voteService.getVotePercentages(selectId);
+    }
+    @GetMapping
+    public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(String userId) {
+        return qnaCategoryService.getQnaPostsAndSelectsSortedByCreatedAt(userId);
     }
 
 }
