@@ -135,19 +135,6 @@ public class QnaCategoryService {
             return response;
         }).collect(Collectors.toList());
     }
-//    public List<QnaSelectResponse> getQnaSelects() {
-//        List<SelectDomain> selects = selectRepository.findAll();
-//
-//        return selects.stream().map(select -> {
-//            QnaSelectResponse response = new QnaSelectResponse();
-//            response.setSelectId(select.getId());
-//            response.setTitle(select.getTitle());
-//            response.setParticipants(getVotePercentage(select.getId()).getParticipants());
-//            response.setOptions(getVotePercentage(select.getId()).getOptions());
-//            response.setDate(formatDate(select.getCreatedAt()));
-//            return response;
-//        }).collect(Collectors.toList());
-//    }
 
     private String formatDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -221,6 +208,9 @@ public class QnaCategoryService {
 
             qnaSelectResponses.add(qnaSelectResponse);
         }
+
+        // 최신순으로 정렬
+        qnaSelectResponses.sort(Comparator.comparing(QnaSelectResponse::getCreatedAt).reversed());
 
         return qnaSelectResponses;
     }
