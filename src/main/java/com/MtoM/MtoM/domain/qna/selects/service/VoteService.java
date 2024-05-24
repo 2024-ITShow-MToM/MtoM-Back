@@ -68,7 +68,7 @@ public class VoteService {
             throw new RuntimeException("SelectDomain not found for id: " + selectId);
         }
 
-        // 선택지 도메인 객체를 가져옵니다.
+        // 선택지 도메인 객체
         SelectDomain selectDomain = selectDomainOpt.get();
 
         // 각 옵션의 퍼센트 계산

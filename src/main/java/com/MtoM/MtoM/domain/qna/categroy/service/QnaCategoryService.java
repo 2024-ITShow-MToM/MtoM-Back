@@ -17,6 +17,7 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class QnaCategoryService {
 
     @Autowired
@@ -60,6 +62,7 @@ public class QnaCategoryService {
 
     private static final String VIEW_COUNT_KEY_PREFIX = "post:count:";
     private static final String VOTE_COUNT_PREFIX = "votes:count:";
+    private static final String USER_VOTES_PREFIX = "user:votes:";
 
     public QnaCategoryService(PostRepository postRepository, SelectRepository selectRepository, PostRedisService redisService, VoteService voteService, PostCommentRedisService postCommentRedisService, UserRepository userRepository, PostCommentRepository postCommentRepository, S3Service s3Service) {
         this.postRepository = postRepository;
@@ -71,6 +74,7 @@ public class QnaCategoryService {
         this.postCommentRepository = postCommentRepository;
         this.s3Service = s3Service;
     }
+
     public List<QnaPostResponse> getQnaPostsSortedByComments() {
         List<PostDomain> posts = postRepository.findAll();
 
@@ -151,51 +155,56 @@ public class QnaCategoryService {
     }
 
 
-    public QnaSelectResponse getVotePercentage(Long selectId, String userId) {
-        String voteCountKey = VOTE_COUNT_PREFIX + selectId;
+    public List<QnaSelectResponse> getAllQnaSelectResponses() {
+        List<SelectDomain> allSelectDomains = selectRepository.findAll();
+        List<QnaSelectResponse> qnaSelectResponses = new ArrayList<>();
 
-        Optional<SelectDomain> selectDomainOpt = selectRepository.findById(selectId);
-        if (!selectDomainOpt.isPresent()) {
-            // selectId에 해당하는 데이터가 없는 경우 처리
-            throw new RuntimeException("SelectDomain not found for id: " + selectId);
+        for (SelectDomain selectDomain : allSelectDomains) {
+            // 각 선택지에 대한 로직을 반복
+            Long selectId = selectDomain.getId();
+            log.info("selectId : " + selectId);
+            // Redis에서 투표 데이터를 가져옴
+            String voteCountKey = VOTE_COUNT_PREFIX + selectId;
+            Map<Object, Object> voteCounts = redisTemplate.opsForHash().entries(voteCountKey);
+
+            // 전체 투표 수 계산
+            double totalVotes = 0;
+            for (Object count : voteCounts.values()) {
+                totalVotes += Double.parseDouble(count.toString());
+            }
+
+            // 각 옵션의 퍼센트 계산
+            String option1Content = selectDomain.getOption1();
+            String option2Content = selectDomain.getOption2();
+
+            // 첫 번째 옵션의 퍼센트 계산
+            double countOption1 = Double.parseDouble(voteCounts.getOrDefault("option1", "0").toString());
+            double percentageOption1 = (totalVotes == 0) ? 0 : (countOption1 / totalVotes) * 100;
+
+            // 두 번째 옵션의 퍼센트 계산
+            double countOption2 = Double.parseDouble(voteCounts.getOrDefault("option2", "0").toString());
+            double percentageOption2 = (totalVotes == 0) ? 0 : (countOption2 / totalVotes) * 100;
+
+            // VoteOptionResponse 객체 생성
+            VoteOptionResponse voteOptionResponse = new VoteOptionResponse();
+            voteOptionResponse.setOption1(option1Content);
+            voteOptionResponse.setPercentage1(percentageOption1);
+            voteOptionResponse.setOption2(option2Content);
+            voteOptionResponse.setPercentage2(percentageOption2);
+
+            QnaSelectResponse qnaSelectResponse = new QnaSelectResponse();
+            qnaSelectResponse.setSelectId(selectId);
+            qnaSelectResponse.setTitle(selectDomain.getTitle());
+            qnaSelectResponse.setCreatedAt(selectDomain.getCreatedAt().toString());
+            qnaSelectResponse.setParticipants((int) totalVotes);
+            // TODO : userId를 받은 user가 선택한 옵션을 String으로 추가하기
+            qnaSelectResponse.setUserSelect(null); // user가 선택한 옵션을 String으로 주기
+            qnaSelectResponse.setOptions(List.of(voteOptionResponse));
+
+            qnaSelectResponses.add(qnaSelectResponse);
         }
 
-        SelectDomain selectDomain = selectDomainOpt.get();
-
-        Map<Object, Object> voteCounts = stringRedisTemplate.opsForHash().entries(voteCountKey);
-
-        long totalVotes = voteCounts.values().stream()
-                .mapToLong(value -> Long.parseLong(value.toString()))
-                .sum();
-
-        List<VoteOptionResponse> options = new ArrayList<>();
-        String option1 = selectDomain.getOption1();
-        String option2 = selectDomain.getOption2();
-        if (voteCounts.size() == 2) {
-            List<Object> optionKeys = new ArrayList<>(voteCounts.keySet());
-            String option1Key = optionKeys.get(0).toString();
-            String option2Key = optionKeys.get(1).toString();
-
-            long option1Count = Long.parseLong(voteCounts.get(option1Key).toString());
-            long option2Count = Long.parseLong(voteCounts.get(option2Key).toString());
-
-            int percentage1 = (int) ((option1Count * 100) / totalVotes);
-            int percentage2 = (int) ((option2Count * 100) / totalVotes);
-
-            VoteOptionResponse response = new VoteOptionResponse();
-            response.setOption1(option1);
-            response.setPercentage1(percentage1);
-            response.setOption2(option2);
-            response.setPercentage2(percentage2);
-
-            options.add(response);
-        }
-
-        QnaSelectResponse response = new QnaSelectResponse();
-        response.setSelectId(selectId);
-        response.setOptions(options);
-        response.setParticipants(totalVotes);
-
-        return response;
+        return qnaSelectResponses;
     }
+
 }
