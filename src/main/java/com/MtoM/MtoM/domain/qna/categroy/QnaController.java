@@ -38,6 +38,8 @@ public class QnaController {
                 return qnaCategoryService.getQnaPostsSortedByHearts();
             case "views":
                 return qnaCategoryService.getQnaPostsSortedByViews();
+            case "latest":
+                return qnaCategoryService.getQnaPostsSortedByCreatedAt();
             default:
                 throw new IllegalArgumentException("Invalid sortBy parameter");
         }

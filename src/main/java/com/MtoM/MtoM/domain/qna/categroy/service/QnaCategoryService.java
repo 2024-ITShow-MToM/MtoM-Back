@@ -101,6 +101,17 @@ public class QnaCategoryService {
                 .collect(Collectors.toList());
     }
 
+    public List<QnaPostResponse> getQnaPostsSortedByCreatedAt() {
+        List<PostDomain> posts = postRepository.findAll();
+
+
+        return posts.stream()
+                .map(post -> createQnaPostResponse(post))
+                .sorted(Comparator.comparing(QnaPostResponse::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+    }
+
+
     private QnaPostResponse createQnaPostResponse(PostDomain post) {
         List<PostCommentDomain> comments = postCommentRepository.findByPostId(post.getId());
         QnaPostResponse response = new QnaPostResponse();
