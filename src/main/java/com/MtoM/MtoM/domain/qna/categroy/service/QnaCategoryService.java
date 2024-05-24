@@ -155,7 +155,7 @@ public class QnaCategoryService {
     }
 
 
-    public List<QnaSelectResponse> getAllQnaSelectResponses() {
+    public List<QnaSelectResponse> getAllQnaSelectResponses(String userId) {
         List<SelectDomain> allSelectDomains = selectRepository.findAll();
         List<QnaSelectResponse> qnaSelectResponses = new ArrayList<>();
 
@@ -163,6 +163,7 @@ public class QnaCategoryService {
             // 각 선택지에 대한 로직을 반복
             Long selectId = selectDomain.getId();
             log.info("selectId : " + selectId);
+
             // Redis에서 투표 데이터를 가져옴
             String voteCountKey = VOTE_COUNT_PREFIX + selectId;
             Map<Object, Object> voteCounts = redisTemplate.opsForHash().entries(voteCountKey);
@@ -170,7 +171,11 @@ public class QnaCategoryService {
             // 전체 투표 수 계산
             double totalVotes = 0;
             for (Object count : voteCounts.values()) {
-                totalVotes += Double.parseDouble(count.toString());
+                try {
+                    totalVotes += Double.parseDouble(count.toString());
+                } catch (NumberFormatException e) {
+                    log.error("Invalid number format for vote count: " + count, e);
+                }
             }
 
             // 각 옵션의 퍼센트 계산
@@ -178,11 +183,21 @@ public class QnaCategoryService {
             String option2Content = selectDomain.getOption2();
 
             // 첫 번째 옵션의 퍼센트 계산
-            double countOption1 = Double.parseDouble(voteCounts.getOrDefault("option1", "0").toString());
+            double countOption1 = 0;
+            try {
+                countOption1 = Double.parseDouble(voteCounts.getOrDefault("option1", "0").toString());
+            } catch (NumberFormatException e) {
+                log.error("Invalid number format for option1 count: " + voteCounts.get("option1"), e);
+            }
             double percentageOption1 = (totalVotes == 0) ? 0 : (countOption1 / totalVotes) * 100;
 
             // 두 번째 옵션의 퍼센트 계산
-            double countOption2 = Double.parseDouble(voteCounts.getOrDefault("option2", "0").toString());
+            double countOption2 = 0;
+            try {
+                countOption2 = Double.parseDouble(voteCounts.getOrDefault("option2", "0").toString());
+            } catch (NumberFormatException e) {
+                log.error("Invalid number format for option2 count: " + voteCounts.get("option2"), e);
+            }
             double percentageOption2 = (totalVotes == 0) ? 0 : (countOption2 / totalVotes) * 100;
 
             // VoteOptionResponse 객체 생성
@@ -192,13 +207,16 @@ public class QnaCategoryService {
             voteOptionResponse.setOption2(option2Content);
             voteOptionResponse.setPercentage2(percentageOption2);
 
+            // 사용자가 선택한 옵션 가져오기
+            String userVoteKey = USER_VOTES_PREFIX + userId;
+            String userSelectedOption = (String) stringRedisTemplate.opsForHash().get(userVoteKey, selectId.toString());
+
             QnaSelectResponse qnaSelectResponse = new QnaSelectResponse();
             qnaSelectResponse.setSelectId(selectId);
             qnaSelectResponse.setTitle(selectDomain.getTitle());
-            qnaSelectResponse.setCreatedAt(selectDomain.getCreatedAt().toString());
+            qnaSelectResponse.setCreatedAt(formatDate(selectDomain.getCreatedAt()));
             qnaSelectResponse.setParticipants((int) totalVotes);
-            // TODO : userId를 받은 user가 선택한 옵션을 String으로 추가하기
-            qnaSelectResponse.setUserSelect(null); // user가 선택한 옵션을 String으로 주기
+            qnaSelectResponse.setUserSelect(userSelectedOption); // user가 선택한 옵션을 설정
             qnaSelectResponse.setOptions(List.of(voteOptionResponse));
 
             qnaSelectResponses.add(qnaSelectResponse);
@@ -206,5 +224,6 @@ public class QnaCategoryService {
 
         return qnaSelectResponses;
     }
+
 
 }
