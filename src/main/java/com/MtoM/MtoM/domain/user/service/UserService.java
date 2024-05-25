@@ -2,7 +2,6 @@ package com.MtoM.MtoM.domain.user.service;
 
 import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import com.MtoM.MtoM.domain.user.dto.FindByUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
@@ -76,8 +75,7 @@ public class UserService {
         return id;
     }
 
-    public UserDomain findByUser(FindByUserRequestDto requestDto){
-        String id = requestDto.getId();
+    public UserDomain findByUser(String id){
         checkId(id);
 
         Optional<UserDomain> optionalUser = userRepository.findById(id);

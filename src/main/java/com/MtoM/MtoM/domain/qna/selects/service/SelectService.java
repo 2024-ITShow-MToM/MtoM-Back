@@ -45,7 +45,6 @@ public class SelectService {
         return selectRepository.save(select);
     }
 
-    // 다른 메서드들은 생략
 
     public void updateSelect(Long id, CreateSelectDTO selectDTO, String userId) {
         Optional<SelectDomain> existingSelect = selectRepository.findById(id);

@@ -50,15 +50,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDomain> findByUser (@RequestBody FindByUserRequestDto requestDto){
-        UserDomain user = userService.findByUser(requestDto);
+    public ResponseEntity<UserDomain> findByUser (@RequestParam String userId){
+        UserDomain user = userService.findByUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @GetMapping("/profile/img")
-    public ResponseEntity<String> findByProfileImg(@RequestBody FindByProfileImgRequestDto requestDto){
-        String id = requestDto.getId();
-        String profileImgURL = s3UploadService.getImagePath(id);
+    public ResponseEntity<String> findByProfileImg(@RequestParam String userId){
+        String profileImgURL = s3UploadService.getImagePath(userId);
         return ResponseEntity.status(HttpStatus.OK).body(profileImgURL);
     }
 }
