@@ -2,8 +2,8 @@ package com.MtoM.MtoM.domain.project.service;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
-import com.MtoM.MtoM.domain.project.dto.ListProjectResponseDto;
-import com.MtoM.MtoM.domain.project.dto.RegisterProjectRequestDto;
+import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
+import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.repository.ProjectRedisRepository;
 import com.MtoM.MtoM.domain.project.repository.ProjectRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
@@ -11,7 +11,6 @@ import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import com.MtoM.MtoM.global.exception.IDNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

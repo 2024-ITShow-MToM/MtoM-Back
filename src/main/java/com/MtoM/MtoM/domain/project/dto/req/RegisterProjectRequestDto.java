@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.project.dto;
+package com.MtoM.MtoM.domain.project.dto.req;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;

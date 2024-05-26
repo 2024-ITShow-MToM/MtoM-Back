@@ -2,9 +2,9 @@ package com.MtoM.MtoM.domain.user.service;
 
 import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import com.MtoM.MtoM.domain.user.dto.LoginUserRequestDto;
-import com.MtoM.MtoM.domain.user.dto.RegisterProfileInfoDto;
-import com.MtoM.MtoM.domain.user.dto.RegisterRequestDto;
+import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
+import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
+import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
 import com.MtoM.MtoM.domain.user.repository.SkillRepository;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.exception.*;
