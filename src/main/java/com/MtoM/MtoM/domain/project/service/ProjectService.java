@@ -24,7 +24,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
-    public void registerProject(RegisterProjectRequestDto requestDto) throws IOException {
+    public ProjectDomain registerProject(RegisterProjectRequestDto requestDto) throws IOException {
         System.out.println(requestDto.getTitle());
         System.out.println(requestDto.getImage());
         // 이미지 업로드
@@ -40,5 +40,6 @@ public class ProjectService {
         ProjectRedisDomain projectRedisDomain = requestDto.toRedis(projectId);
         projectRedisRepository.save(projectRedisDomain);
 
+        return projectDomain;
     }
 }

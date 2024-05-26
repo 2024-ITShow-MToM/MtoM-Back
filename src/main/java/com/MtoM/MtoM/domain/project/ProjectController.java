@@ -1,9 +1,11 @@
 package com.MtoM.MtoM.domain.project;
 
+import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
 import com.MtoM.MtoM.domain.project.dto.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.repository.ProjectRedisRepository;
 import com.MtoM.MtoM.domain.project.service.ProjectService;
+import com.MtoM.MtoM.global.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,9 @@ public class ProjectController {
     private final ProjectRedisRepository projectRedisRepository;
 
     @PostMapping
-    public ResponseEntity<String> registerProject(@ModelAttribute RegisterProjectRequestDto requestDto) throws IOException {
-        projectService.registerProject(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+    public ResponseEntity<ResponseMessage<ProjectDomain>> registerProject(@ModelAttribute RegisterProjectRequestDto requestDto) throws IOException {
+        ProjectDomain project =  projectService.registerProject(requestDto);
+        return new ResponseEntity<>(new ResponseMessage<>("Project created successfully", project), HttpStatus.CREATED);
     }
 
 }
