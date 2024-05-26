@@ -1,9 +1,10 @@
-package com.MtoM.MtoM.domain.user.dto;
+package com.MtoM.MtoM.domain.user.dto.req;
 
 import com.MtoM.MtoM.domain.user.domain.Gender;
 import com.MtoM.MtoM.domain.user.domain.Major;
 import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.domain.user.dto.Skill;
 import lombok.Getter;
 import org.apache.catalina.User;
 

@@ -1,7 +1,6 @@
 package com.MtoM.MtoM.global.S3Service;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import com.MtoM.MtoM.domain.user.dto.FindByProfileImgRequestDto;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.exception.IDNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
