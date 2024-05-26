@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.project;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
+import com.MtoM.MtoM.domain.project.dto.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.repository.ProjectRedisRepository;
 import com.MtoM.MtoM.domain.project.service.ProjectService;
@@ -12,13 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService projectService;
-    private final ProjectRedisRepository projectRedisRepository;
 
     @PostMapping
     public ResponseEntity<ResponseMessage<ProjectDomain>> registerProject(@ModelAttribute RegisterProjectRequestDto requestDto) throws IOException {
@@ -26,4 +27,9 @@ public class ProjectController {
         return new ResponseEntity<>(new ResponseMessage<>("Project created successfully", project), HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<ResponseMessage<List<ListProjectResponseDto>>> listProject(){
+        List<ListProjectResponseDto> projects = projectService.listProject();
+        return new ResponseEntity<>(new ResponseMessage<>("Projects retrieved successfully", projects), HttpStatus.OK);
+    }
 }
