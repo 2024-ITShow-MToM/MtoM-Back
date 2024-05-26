@@ -52,6 +52,7 @@ public class UserService {
         user.setMbti(requestDto.getMbti());
         user.setPersonal(requestDto.getPersonal());
         user.setImogi(requestDto.getImogi());
+        user.setMentoring_topics(requestDto.getMentoring_topics());
 
         userRepository.save(user);
         List<SkillDomain> skillDomainList = requestDto.toSkillEntity();
