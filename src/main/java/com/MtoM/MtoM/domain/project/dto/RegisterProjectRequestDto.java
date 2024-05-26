@@ -3,11 +3,16 @@ package com.MtoM.MtoM.domain.project.dto;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-@Getter
+@Getter @Setter
+@NoArgsConstructor
 public class RegisterProjectRequestDto {
-    private UserDomain userId;
+    private String userId;
     private String title;
     private String description;
     private String recruitment_start;
@@ -20,10 +25,11 @@ public class RegisterProjectRequestDto {
     private Long promoter_personnel;
     private String introduction;
     private Boolean is_matching;
+    private MultipartFile image;
 
-    public ProjectDomain toEntity(){
+    public ProjectDomain toEntity(UserDomain user, String imgUrl){
         return ProjectDomain.builder()
-                .user(userId)
+                .user(user)
                 .title(title)
                 .description(description)
                 .recruitment_start(recruitment_start)
@@ -36,6 +42,7 @@ public class RegisterProjectRequestDto {
                 .promoter_personnel(promoter_personnel)
                 .introduction(introduction)
                 .is_matching(false)
+                .img(imgUrl)
                 .build();
     }
 
