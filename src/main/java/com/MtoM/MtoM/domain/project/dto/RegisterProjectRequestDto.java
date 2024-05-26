@@ -10,7 +10,6 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter
-@NoArgsConstructor
 public class RegisterProjectRequestDto {
     private String userId;
     private String title;
