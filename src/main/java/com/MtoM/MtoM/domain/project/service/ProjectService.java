@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.project.service;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
+import com.MtoM.MtoM.domain.project.dto.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.repository.ProjectRedisRepository;
 import com.MtoM.MtoM.domain.project.repository.ProjectRepository;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -25,8 +28,6 @@ public class ProjectService {
     private final S3Service s3Service;
 
     public ProjectDomain registerProject(RegisterProjectRequestDto requestDto) throws IOException {
-        System.out.println(requestDto.getTitle());
-        System.out.println(requestDto.getImage());
         // 이미지 업로드
         String imageUrl = s3Service.uploadImage(requestDto.getImage(), "project");
 
@@ -41,5 +42,13 @@ public class ProjectService {
         projectRedisRepository.save(projectRedisDomain);
 
         return projectDomain;
+    }
+
+
+    public List<ListProjectResponseDto> listProject(){
+        List<ProjectDomain> projects = projectRepository.findAll();
+        return projects.stream()
+                .map(ListProjectResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
