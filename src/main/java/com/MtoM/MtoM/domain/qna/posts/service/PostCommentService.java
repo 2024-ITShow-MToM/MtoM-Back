@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.qna.posts.service;
 
+import com.MtoM.MtoM.domain.qna.posts.dao.PostHeartUsersResponse;
+import com.MtoM.MtoM.domain.qna.posts.dao.PostUserResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostCommentDomain;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostComment;
 import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostComment;
@@ -8,14 +10,17 @@ import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.qna.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
+import com.MtoM.MtoM.global.S3Service.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,7 @@ public class PostCommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRedisService postCommentRedisService;
+    private final S3Service s3Service;
 
     private static final String HEART_COUNT_KEY_PREFIX = "post:comment:heart";
     private final RedisTemplate<String,Integer> redisTemplate;
@@ -89,6 +95,46 @@ public class PostCommentService {
             }
         }
         return false;
+    }
+
+    public PostHeartUsersResponse getPostHeartUsers(Long id) {
+        PostCommentDomain post = postCommentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID"));
+
+        PostHeartUsersResponse response = new PostHeartUsersResponse();
+        response.setHeartCount(postCommentRedisService.getPostCommentHearts(post.getId()));
+
+        Set<String> userIds = postCommentRedisService.getPostHeartedUsers(id);
+
+        List<PostUserResponse> userResponses = new ArrayList<>();
+        for (String userIdStr : userIds) {
+            String userId;
+            try {
+                userId = userIdStr;
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid user ID format: " + userIdStr);
+                continue;
+            }
+
+            try {
+                UserDomain user = userRepository.findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
+
+                String profileImgURL = s3Service.getImagePath(user.getId());
+                PostUserResponse userResponse = new PostUserResponse();
+                userResponse.setUserId(user.getId());
+                userResponse.setProfile(profileImgURL);
+                userResponse.setMajor(user.getMajor().toString());
+                userResponse.setName(user.getStudent_id() + " " + user.getName());
+
+                userResponses.add(userResponse);
+            } catch (IllegalArgumentException e) {
+                System.err.println("User not found for ID: " + userId);
+            }
+        }
+
+        response.setUsers(userResponses);
+        return response;
     }
 
     public void togglePostCommentHeart(String userId, Long commentId) {
