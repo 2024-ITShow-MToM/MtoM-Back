@@ -1,9 +1,12 @@
 package com.MtoM.MtoM.domain.project.domain;
 
+import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Builder
 @Getter @Setter
@@ -47,4 +50,7 @@ public class ProjectDomain {
 
     private Boolean is_matching;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "project",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<MatchingProjectDomain> matchingProjectDomainList;
 }
