@@ -18,9 +18,7 @@ public class SkillDomain {
     @JoinColumn(name = "user_id")
     private UserDomain user;
 
-    @Column
     private String skill_name;
 
-    @Column
     private Integer skill_score;
 }

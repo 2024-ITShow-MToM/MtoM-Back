@@ -14,54 +14,41 @@ import java.util.List;
 @Entity (name = "users")
 public class UserDomain {
     @Id
-    @Column
     private String id;
 
-    @Column
     private String name;
 
-    @Column
     private Long student_id;
 
-    @Column
     private String birthday;
 
-    @Column
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(unique = true)
     private String phonenumber;
 
-    @Column
     @Enumerated(EnumType.STRING)
     private Major major;
 
     @JsonIgnore
-    @Column
     private String password;
 
     @Column(unique = true)
     private String email;
 
     @JsonIgnore
-    @Column
     private String profile;
 
-    @Column
     private String mbti;
 
-    @Column
     private String personal;
 
-    @Column
     private String imogi;
 
-    @Column
     private String mentoring_topics;
 
     @JsonIgnore
-    @Column
     private String social;
 
     public UserDomain(String id){
