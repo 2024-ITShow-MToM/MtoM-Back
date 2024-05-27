@@ -66,4 +66,11 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
+
+    @ExceptionHandler(MajorNotFoundException.class)
+    public ResponseEntity<ErrorResponse> majorNotFoundException(MajorNotFoundException ex){
+        log.error("MajorNotFoundException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
 }
