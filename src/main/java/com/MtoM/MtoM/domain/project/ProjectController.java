@@ -3,6 +3,7 @@ package com.MtoM.MtoM.domain.project;
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.dto.req.ApplicationProjectRequestDto;
+import com.MtoM.MtoM.domain.project.dto.res.FindMajorProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
@@ -44,5 +45,11 @@ public class ProjectController {
     public ResponseEntity<ResponseMessage<MatchingProjectDomain>> applicationProject(@RequestBody ApplicationProjectRequestDto requestDto){
         MatchingProjectDomain application = projectService.applicationProject(requestDto);
         return new ResponseEntity<>(new ResponseMessage<>("prject matching successfully", application), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/major/{major}")
+    public ResponseEntity<ResponseMessage<List<FindMajorProjectResponseDto>>> majorProject(@PathVariable("major") String major){
+        List<FindMajorProjectResponseDto> projects = projectService.findMajorProject(major);
+        return new ResponseEntity<>(new ResponseMessage<>("project reterieved successfully", projects), HttpStatus.OK);
     }
 }
