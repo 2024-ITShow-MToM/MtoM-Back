@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.qna.posts.controller;
 
+import com.MtoM.MtoM.domain.qna.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.qna.posts.dto.CreatePostComment;
 import com.MtoM.MtoM.domain.qna.posts.dto.UpdatePostComment;
 import com.MtoM.MtoM.domain.qna.posts.service.PostCommentService;
@@ -52,5 +53,11 @@ public class PostCommentController {
     public ResponseEntity<String> togglePostCommentHeart(@PathVariable Long commentId, @RequestParam String userId) {
         postCommentService.togglePostCommentHeart(userId, commentId);
         return ResponseEntity.ok("Heart toggled successfully.");
+    }
+
+    // 게시물 댓글 하트 누른 사람 조회
+    @GetMapping("/{id}/hearts/users")
+    public PostHeartUsersResponse getPostHeartUsers(@PathVariable Long id) {
+        return postCommentService.getPostHeartUsers(id);
     }
 }

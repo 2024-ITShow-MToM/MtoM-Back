@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,15 @@ public class PostCommentRedisService {
     public Integer getPostCommentHearts(Long commentId) {
         String key = HEART_COUNT_KEY_PREFIX + commentId;
         return Math.toIntExact(redisTemplate.opsForHash().size(key));
+    }
+
+    // 특정 게시물에 좋아요를 누른 사용자 ID 목록을 반환하는 메서드
+    public Set<String> getPostHeartedUsers(Long postId) {
+        String key = HEART_COUNT_KEY_PREFIX + postId;
+        return redisTemplate.opsForHash().keys(key)
+                .stream()
+                .map(Object::toString) // Ensure all keys are converted to String
+                .collect(Collectors.toSet());
     }
 
 }
