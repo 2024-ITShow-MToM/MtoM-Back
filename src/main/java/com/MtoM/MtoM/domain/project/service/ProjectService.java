@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.project.service;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
+import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.repository.ProjectRedisRepository;
@@ -10,6 +11,7 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import com.MtoM.MtoM.global.exception.IDNotFoundException;
+import com.MtoM.MtoM.global.exception.ProjectNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,5 +51,12 @@ public class ProjectService {
         return projects.stream()
                 .map(ListProjectResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public FindProjectResponseDto findProject(Long projectId){
+        ProjectDomain project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("project not found", ErrorCode.PROJECT_NOTFOUND));
+
+        return new FindProjectResponseDto(project);
     }
 }
