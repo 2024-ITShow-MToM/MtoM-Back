@@ -13,7 +13,8 @@ public enum ErrorCode {
     EMAIL_NOTFOUND(404, "USER-ERROR-404", "존재하지 않은 이메일 입니다"),
     ID_NOTFOUND(404, "USER-ERROR-404", "가입되지 않은 아이디 입니다."),
     PASSWORD_NOTMATCH(401, "USER-ERROR-401", "비밀번호가 일치하지 않습니다"),
-    PROJECT_NOTFOUND(404, "PROJECT-ERROR-404", "존재하지 않는 프로젝트 입니다");
+    PROJECT_NOTFOUND(404, "PROJECT-ERROR-404", "존재하지 않는 프로젝트 입니다"),
+    PROJECT_ALREADY_MATCH(400, "PROJECT-ERROR-400", "이미 매칭된 프로젝트 입니다");
 
     private int status;
     private String errorCode;
