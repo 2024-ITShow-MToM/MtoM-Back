@@ -4,6 +4,7 @@ import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
 import com.MtoM.MtoM.domain.project.dto.req.ApplicationProjectRequestDto;
+import com.MtoM.MtoM.domain.project.dto.res.FindMajorProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +82,29 @@ public class ProjectService {
         ProjectDomain project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("project not found", ErrorCode.PROJECT_NOTFOUND));
 
+        //Todo:프로젝트 신청가능한 인원수 감소하기
+
         return matchingProjectRepository.save(requestDto.toEntity(user, project));
+    }
+
+    public List<FindMajorProjectResponseDto> findMajorProject(String major){
+        List<ProjectDomain> projects = new ArrayList<>();
+        switch (major) {
+            case "backend":
+                projects = projectRepository.findByBackend(); break;
+            case "frontend" :
+                projects = projectRepository.findByFrontend(); break;
+            case "designer" :
+                projects = projectRepository.findByDesigner(); break;
+            case "promoter" :
+                projects = projectRepository.findByPromoter(); break;
+            default:
+                //Todo: 에러처리
+                break;
+        }
+
+        return projects.stream()
+                .map(FindMajorProjectResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
