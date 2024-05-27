@@ -1,6 +1,8 @@
 package com.MtoM.MtoM.domain.project;
 
+import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
+import com.MtoM.MtoM.domain.project.dto.req.ApplicationProjectRequestDto;
 import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
@@ -36,5 +38,11 @@ public class ProjectController {
     public ResponseEntity<ResponseMessage<FindProjectResponseDto>> findProject(@PathVariable("projectId") Long projectId){
         FindProjectResponseDto project = projectService.findProject(projectId);
         return new ResponseEntity<>(new ResponseMessage<>("prject reterieved successfully", project), HttpStatus.OK);
+    }
+
+    @PostMapping("/application")
+    public ResponseEntity<ResponseMessage<MatchingProjectDomain>> applicationProject(@RequestBody ApplicationProjectRequestDto requestDto){
+        MatchingProjectDomain application = projectService.applicationProject(requestDto);
+        return new ResponseEntity<>(new ResponseMessage<>("prject matching successfully", application), HttpStatus.CREATED);
     }
 }
