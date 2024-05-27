@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.user.domain;
 
+import com.MtoM.MtoM.domain.mentor.domain.MentorDomain;
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -67,4 +68,12 @@ public class UserDomain {
     @JsonIgnore
     @OneToMany(mappedBy = "user",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<MatchingProjectDomain> matchingProjectDomainList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mentor",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<MentorDomain> mentorDomainList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mentee",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<MentorDomain> menteeDomainList;
 }

@@ -15,6 +15,7 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import com.MtoM.MtoM.global.exception.IDNotFoundException;
+import com.MtoM.MtoM.global.exception.MajorNotFoundException;
 import com.MtoM.MtoM.global.exception.ProjectAlreadyMatchException;
 import com.MtoM.MtoM.global.exception.ProjectNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
@@ -99,8 +100,7 @@ public class ProjectService {
             case "promoter" :
                 projects = projectRepository.findByPromoter(); break;
             default:
-                //Todo: 에러처리
-                break;
+                throw new MajorNotFoundException("major not found", ErrorCode.MAJOR_NOTFOUND);
         }
 
         return projects.stream()
