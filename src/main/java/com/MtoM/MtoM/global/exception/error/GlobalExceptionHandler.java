@@ -52,4 +52,11 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
+
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<ErrorResponse> projectNotFoundException(PasswordNotMatchException ex){
+        log.error("ProjectNotFoundException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
 }
