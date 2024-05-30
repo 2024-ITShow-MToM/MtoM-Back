@@ -193,11 +193,6 @@ public class PostService {
         // 게시물 조회수 증가
         redisService.incrementViewCount(id);
 
-        List<PostCommentDomain> comments = postCommentRepository.findByPostId(id);
-
-        List<CommentResponse> commentResponses = comments.stream().map(this::convertToCommentResponse).collect(Collectors.toList());
-
-
         PostUserResponse userResponse = new PostUserResponse();
         UserDomain user = post.getUser();
         String profileImgURL = s3Service.getImagePath(user.getId());
@@ -213,16 +208,21 @@ public class PostService {
         response.setContent(post.getContent());
         response.setImg(post.getImg());
         response.setHashtags(post.getHashtags());
-        response.setCommentCount(comments.size());
+        response.setCommentCount(postCommentRepository.countByPostId(id)); // 댓글 수를 따로 계산
         response.setHeartCount(redisService.getPostHearts(post.getId()));
         response.setView(redisService.getViewCount(post.getId()));
         response.setCreatedAt(formatDate(post.getCreatedAt()));
         response.setUser(List.of(userResponse));
-        response.setComments(commentResponses);
-
 
         return response;
     }
+
+
+    public List<CommentResponse> getPostComments(Long postId) {
+        List<PostCommentDomain> comments = postCommentRepository.findByPostId(postId);
+        return comments.stream().map(this::convertToCommentResponse).collect(Collectors.toList());
+    }
+
 
     private CommentResponse convertToCommentResponse(PostCommentDomain comment) {
         CommentResponse response = new CommentResponse();
