@@ -20,12 +20,14 @@ import com.MtoM.MtoM.global.exception.ProjectAlreadyMatchException;
 import com.MtoM.MtoM.global.exception.ProjectNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class ProjectService {
     private final MatchingProjectRepository matchingProjectRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public ProjectDomain registerProject(RegisterProjectRequestDto requestDto) throws IOException {
         // 이미지 업로드
@@ -54,11 +57,16 @@ public class ProjectService {
 
         return projectDomain;
     }
+
     @Transactional(readOnly = true)
     public List<ListProjectResponseDto> listProject(){
         List<ProjectDomain> projects = projectRepository.findAll();
         return projects.stream()
-                .map(ListProjectResponseDto::new)
+                .map(project ->{
+                    String redisKey = "project:" + project.getId();
+                    Map<Object, Object> redisHash = redisTemplate.opsForHash().entries(redisKey);
+                    return new ListProjectResponseDto(project, redisHash);
+                })
                 .collect(Collectors.toList());
     }
 
