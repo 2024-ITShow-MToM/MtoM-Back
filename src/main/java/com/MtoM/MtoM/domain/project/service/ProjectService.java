@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,11 +52,27 @@ public class ProjectService {
         ProjectDomain projectDomain = projectRepository.save(requestDto.toEntity(user, imageUrl));
 
         Long projectId = projectDomain.getId();
+
         // Redis에 프로젝트 인원 데이터 저장
-        ProjectRedisDomain projectRedisDomain = requestDto.toRedis(projectId);
-        projectRedisRepository.save(projectRedisDomain);
+        saveProjectRedisData(projectId, requestDto);
 
         return projectDomain;
+    }
+    private void saveProjectRedisData(Long projectId, RegisterProjectRequestDto requestDto) {
+        String key = "project:" + projectId;
+
+        Map<String, Long> projectData = new HashMap<>();
+        projectData.put("frontendPersonnel", requestDto.getFrontend_personnel());
+        projectData.put("backendPersonnel", requestDto.getBackend_personnel());
+        projectData.put("designerPersonnel", requestDto.getDesigner_personnel());
+        projectData.put("promoterPersonnel", requestDto.getPromoter_personnel());
+        projectData.put("currentFrontendPersonnel", 0L);
+        projectData.put("currentBackendPersonnel", 0L);
+        projectData.put("currentDesignerPersonnel", 0L);
+        projectData.put("currentPromoterPersonnel", 0L);
+
+        redisTemplate.opsForHash().putAll(key, projectData);
+
     }
 
     @Transactional(readOnly = true)
