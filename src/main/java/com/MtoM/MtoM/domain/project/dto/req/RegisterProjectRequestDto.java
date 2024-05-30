@@ -1,11 +1,8 @@
 package com.MtoM.MtoM.domain.project.dto.req;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
-import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,18 +42,4 @@ public class RegisterProjectRequestDto {
                 .build();
     }
 
-    public ProjectRedisDomain toRedis(Long projectId){
-        ProjectRedisDomain projectRedisDomain = new ProjectRedisDomain();
-        projectRedisDomain.setId(projectId);
-        projectRedisDomain.setFront_member(this.frontend_personnel);
-        projectRedisDomain.setBack_member(this.backend_personnel);
-        projectRedisDomain.setDisign_member(this.designer_personnel);
-        projectRedisDomain.setPromoter_member(this.designer_personnel);
-        projectRedisDomain.setCurrent_front_member(0L);
-        projectRedisDomain.setCurrnet_back_member(0L);
-        projectRedisDomain.setCurrent_disign_member(0L);
-        projectRedisDomain.setCurrent_promoter_member(0L);
-
-        return projectRedisDomain;
-    }
 }
