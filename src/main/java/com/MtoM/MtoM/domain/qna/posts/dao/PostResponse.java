@@ -16,5 +16,4 @@ public class PostResponse {
     private String hashtags;
     private int heartCount;
     private int commentCount;
-    private List<CommentResponse> comments;
 }

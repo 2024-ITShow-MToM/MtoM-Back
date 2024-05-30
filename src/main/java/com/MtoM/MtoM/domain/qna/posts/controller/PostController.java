@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.qna.posts.controller;
 
+import com.MtoM.MtoM.domain.qna.posts.dao.CommentResponse;
 import com.MtoM.MtoM.domain.qna.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.qna.posts.dao.PostResponse;
 import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
@@ -42,6 +43,12 @@ public class PostController {
     public ResponseEntity<PostResponse> getPostDetailsById(@PathVariable("id") Long id) {
         PostResponse response = postService.getPostDetail(id);
         return ResponseEntity.ok(response);
+    }
+
+    // 게시물에 대한 댓글 목록 조회
+    @GetMapping("/{id}/comments")
+    public List<CommentResponse> getPostComments(@PathVariable Long id) {
+        return postService.getPostComments(id);
     }
 
     // 게시물 생성

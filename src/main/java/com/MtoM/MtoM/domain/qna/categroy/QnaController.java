@@ -30,7 +30,7 @@ public class QnaController {
 //    }
 
     @GetMapping("/posts")
-    public List<QnaPostResponse> getQnaPosts(@RequestParam String sortBy) {
+    public List<QnaPostResponse> getQnaPosts(@RequestParam(defaultValue = "latest") String sortBy) {
         switch (sortBy) {
             case "comments":
                 return qnaCategoryService.getQnaPostsSortedByComments();

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PostCommentRepository extends JpaRepository<PostCommentDomain, Long> {
     List<PostCommentDomain> findByPostId(Long postId);
+
+    int countByPostId(Long id);
 }
