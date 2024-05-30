@@ -103,6 +103,7 @@ public class PostCommentService {
 
         PostHeartUsersResponse response = new PostHeartUsersResponse();
         response.setHeartCount(postCommentRedisService.getPostCommentHearts(post.getId()));
+        response.setCommentCount(postCommentRepository.countByPostId(post.getId()));
 
         Set<String> userIds = postCommentRedisService.getPostHeartedUsers(id);
 
