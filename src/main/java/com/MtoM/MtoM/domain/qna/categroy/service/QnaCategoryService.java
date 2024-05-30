@@ -104,13 +104,28 @@ public class QnaCategoryService {
     public List<QnaPostResponse> getQnaPostsSortedByCreatedAt() {
         List<PostDomain> posts = postRepository.findAll();
 
-
         return posts.stream()
                 .map(post -> createQnaPostResponse(post))
                 .sorted(Comparator.comparing(QnaPostResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
     }
 
+    public List<QnaPostResponse> getQnaPostsByUser(String userId) {
+        List<PostDomain> posts = postRepository.findAllByUserId(userId);
+        return posts.stream().map(post -> {
+            List<PostCommentDomain> comments = postCommentRepository.findByPostId(post.getId());
+            QnaPostResponse response = new QnaPostResponse();
+            response.setPostId(post.getId());
+            response.setTitle(post.getTitle());
+            response.setImg(post.getImg());
+            response.setHashtags(post.getHashtags());
+            response.setCommentCount(comments.size());
+            response.setHeartCount(redisService.getPostHearts(post.getId()));
+            response.setViewCount(redisService.getViewCount(post.getId()));
+            response.setCreatedAt(formatDate(post.getCreatedAt()));
+            return response;
+        }).collect(Collectors.toList());
+    }
 
     private QnaPostResponse createQnaPostResponse(PostDomain post) {
         List<PostCommentDomain> comments = postCommentRepository.findByPostId(post.getId());
