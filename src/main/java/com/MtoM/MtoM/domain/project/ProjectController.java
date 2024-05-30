@@ -2,11 +2,13 @@ package com.MtoM.MtoM.domain.project;
 
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
+import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
 import com.MtoM.MtoM.domain.project.dto.req.ApplicationProjectRequestDto;
 import com.MtoM.MtoM.domain.project.dto.res.FindMajorProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
+import com.MtoM.MtoM.domain.project.repository.ProjectRedisRepository;
 import com.MtoM.MtoM.domain.project.service.ProjectService;
 import com.MtoM.MtoM.global.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectService projectService;
+    private final ProjectRedisRepository projectRedisRepository;
 
     @PostMapping
     public ResponseEntity<ResponseMessage<ProjectDomain>> registerProject(@ModelAttribute RegisterProjectRequestDto requestDto) throws IOException {
@@ -52,4 +55,5 @@ public class ProjectController {
         List<FindMajorProjectResponseDto> projects = projectService.findMajorProject(major);
         return new ResponseEntity<>(new ResponseMessage<>("project reterieved successfully", projects), HttpStatus.OK);
     }
+
 }
