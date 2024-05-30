@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.user.domain;
 
+import com.MtoM.MtoM.domain.mentor.domain.MentorDomain;
+import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -14,54 +16,41 @@ import java.util.List;
 @Entity (name = "users")
 public class UserDomain {
     @Id
-    @Column
     private String id;
 
-    @Column
     private String name;
 
-    @Column
     private Long student_id;
 
-    @Column
     private String birthday;
 
-    @Column
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(unique = true)
     private String phonenumber;
 
-    @Column
     @Enumerated(EnumType.STRING)
     private Major major;
 
     @JsonIgnore
-    @Column
     private String password;
 
     @Column(unique = true)
     private String email;
 
     @JsonIgnore
-    @Column
     private String profile;
 
-    @Column
     private String mbti;
 
-    @Column
     private String personal;
 
-    @Column
     private String imogi;
 
-    @Column
     private String mentoring_topics;
 
     @JsonIgnore
-    @Column
     private String social;
 
     public UserDomain(String id){
@@ -75,4 +64,16 @@ public class UserDomain {
     @JsonIgnore
     @OneToMany(mappedBy = "user",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<SkillDomain> skillDomainList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<MatchingProjectDomain> matchingProjectDomainList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mentor",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<MentorDomain> mentorDomainList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mentee",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<MentorDomain> menteeDomainList;
 }

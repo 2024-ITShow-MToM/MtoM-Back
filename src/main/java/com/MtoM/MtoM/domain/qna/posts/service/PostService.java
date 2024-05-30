@@ -246,7 +246,7 @@ public class PostService {
 
         PostHeartUsersResponse response = new PostHeartUsersResponse();
         response.setHeartCount(redisService.getPostHearts(post.getId()));
-
+        response.setCommentCount(postCommentRepository.countByPostId(id));
         Set<String> userIds = redisService.getPostHeartedUsers(id);
 
         List<PostUserResponse> userResponses = new ArrayList<>();
