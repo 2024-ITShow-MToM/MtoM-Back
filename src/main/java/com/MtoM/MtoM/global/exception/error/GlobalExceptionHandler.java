@@ -1,9 +1,6 @@
 package com.MtoM.MtoM.global.exception.error;
 
-import com.MtoM.MtoM.global.exception.EmailDuplicateException;
-import com.MtoM.MtoM.global.exception.EmailNotFoundException;
-import com.MtoM.MtoM.global.exception.IDNotFoundException;
-import com.MtoM.MtoM.global.exception.IdDuplicateException;
+import com.MtoM.MtoM.global.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +42,34 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IDNotFoundException.class)
     public ResponseEntity<ErrorResponse> IDNotFoundException(IDNotFoundException ex){
         log.error("IDNotFoundException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(PasswordNotMatchException.class)
+    public ResponseEntity<ErrorResponse> passwordNotMatchException(PasswordNotMatchException ex){
+        log.error("PasswordNotMatchException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<ErrorResponse> projectNotFoundException(ProjectNotFoundException ex){
+        log.error("ProjectNotFoundException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(ProjectAlreadyMatchException.class)
+    public ResponseEntity<ErrorResponse> projectAlreadyMatchException(ProjectAlreadyMatchException ex){
+        log.error("ProjectAlreadyMatchException", ex);
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(MajorNotFoundException.class)
+    public ResponseEntity<ErrorResponse> majorNotFoundException(MajorNotFoundException ex){
+        log.error("MajorNotFoundException", ex);
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }

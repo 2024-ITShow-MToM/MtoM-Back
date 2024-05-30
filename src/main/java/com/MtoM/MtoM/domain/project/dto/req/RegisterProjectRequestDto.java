@@ -1,13 +1,14 @@
-package com.MtoM.MtoM.domain.project.dto;
+package com.MtoM.MtoM.domain.project.dto.req;
 
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
-import com.MtoM.MtoM.domain.project.domain.ProjectRedisDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-@Getter
+@Getter @Setter
 public class RegisterProjectRequestDto {
-    private UserDomain userId;
+    private String userId;
     private String title;
     private String description;
     private String recruitment_start;
@@ -20,10 +21,11 @@ public class RegisterProjectRequestDto {
     private Long promoter_personnel;
     private String introduction;
     private Boolean is_matching;
+    private MultipartFile image;
 
-    public ProjectDomain toEntity(){
+    public ProjectDomain toEntity(UserDomain user, String imgUrl){
         return ProjectDomain.builder()
-                .user(userId)
+                .user(user)
                 .title(title)
                 .description(description)
                 .recruitment_start(recruitment_start)
@@ -36,21 +38,8 @@ public class RegisterProjectRequestDto {
                 .promoter_personnel(promoter_personnel)
                 .introduction(introduction)
                 .is_matching(false)
+                .img(imgUrl)
                 .build();
     }
 
-    public ProjectRedisDomain toRedis(Long projectId){
-        ProjectRedisDomain projectRedisDomain = new ProjectRedisDomain();
-        projectRedisDomain.setId(projectId);
-        projectRedisDomain.setFront_member(this.frontend_personnel);
-        projectRedisDomain.setBack_member(this.backend_personnel);
-        projectRedisDomain.setDisign_member(this.designer_personnel);
-        projectRedisDomain.setPromoter_member(this.designer_personnel);
-        projectRedisDomain.setCurrent_front_member(0L);
-        projectRedisDomain.setCurrnet_back_member(0L);
-        projectRedisDomain.setCurrent_disign_member(0L);
-        projectRedisDomain.setCurrent_promoter_member(0L);
-
-        return projectRedisDomain;
-    }
 }

@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.user.dto;
+package com.MtoM.MtoM.domain.user.dto.req;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import lombok.Getter;

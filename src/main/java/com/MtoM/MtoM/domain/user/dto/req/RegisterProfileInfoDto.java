@@ -1,11 +1,15 @@
-package com.MtoM.MtoM.domain.user.dto;
+package com.MtoM.MtoM.domain.user.dto.req;
 
 import com.MtoM.MtoM.domain.user.domain.Gender;
 import com.MtoM.MtoM.domain.user.domain.Major;
 import com.MtoM.MtoM.domain.user.domain.SkillDomain;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.domain.user.dto.Skill;
 import lombok.Getter;
 import org.apache.catalina.User;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class RegisterProfileInfoDto {
@@ -17,16 +21,18 @@ public class RegisterProfileInfoDto {
     private String phonenumber;
     private Major major;
     private String mbti;
-    private String skill_name;
-    private Integer skill_score;
+    private List<Skill> skills;
     private String personal;
     private String imogi;
+    private String mentoring_topics;
 
-    public SkillDomain toSkillEntity(){
-        return SkillDomain.builder()
-                .user(userId)
-                .skill_name(skill_name)
-                .skill_score(skill_score)
-                .build();
+    public List<SkillDomain> toSkillEntity(){
+        return skills.stream()
+                .map(skill -> SkillDomain.builder()
+                        .user(userId)
+                        .skill_name(skill.getSkill_name())
+                        .skill_score(skill.getSkill_score())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
