@@ -19,6 +19,7 @@ import com.MtoM.MtoM.global.exception.MajorNotFoundException;
 import com.MtoM.MtoM.global.exception.ProjectAlreadyMatchException;
 import com.MtoM.MtoM.global.exception.ProjectNotFoundException;
 import com.MtoM.MtoM.global.exception.error.ErrorCode;
+import com.MtoM.MtoM.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;
 
     public ProjectDomain registerProject(RegisterProjectRequestDto requestDto) throws IOException {
         // 이미지 업로드
@@ -131,8 +133,35 @@ public class ProjectService {
                 throw new MajorNotFoundException("major not found", ErrorCode.MAJOR_NOTFOUND);
         }
 
-        return projects.stream()
-                .map(FindMajorProjectResponseDto::new)
+        projects = projects.stream()
+                .filter(project -> {
+                    Long memberCount = getPersonnelCountByMajor(project, major);
+                    Long currentMemberCount = redisService.getCurrentMemberCount(project.getId(), major);
+                    return (memberCount - currentMemberCount > 0) ? true : false;
+                })
                 .collect(Collectors.toList());
+
+        return projects.stream()
+                .map(project ->{
+                    String redisKey = "project:" + project.getId();
+                    Map<Object, Object> redisHash = redisTemplate.opsForHash().entries(redisKey);
+                    return new FindMajorProjectResponseDto(project, redisHash);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Long getPersonnelCountByMajor(ProjectDomain project, String major) {
+        switch (major) {
+            case "backend":
+                return project.getBackend_personnel();
+            case "frontend":
+                return project.getFrontend_personnel();
+            case "designer":
+                return project.getDesigner_personnel();
+            case "promoter":
+                return project.getPromoter_personnel();
+            default:
+                throw new MajorNotFoundException("major not found", ErrorCode.MAJOR_NOTFOUND);
+        }
     }
 }

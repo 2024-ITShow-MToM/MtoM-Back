@@ -4,6 +4,8 @@ import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter @Setter
 public class FindMajorProjectResponseDto {
     private Long id;
@@ -22,7 +24,7 @@ public class FindMajorProjectResponseDto {
     private Boolean is_matching;
     private String img;
 
-    public FindMajorProjectResponseDto(ProjectDomain projectDomain) {
+    public FindMajorProjectResponseDto(ProjectDomain projectDomain, Map<Object, Object> redisValue) {
         this.id = projectDomain.getId();
         this.userId = projectDomain.getUser().getId();
         this.title = projectDomain.getTitle();
