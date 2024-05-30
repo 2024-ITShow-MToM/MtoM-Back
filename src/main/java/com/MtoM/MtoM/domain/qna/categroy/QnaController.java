@@ -45,6 +45,7 @@ public class QnaController {
         }
     }
 
+
     @GetMapping("/selects")
     public List<QnaSelectResponse> getAllQnaSelectResponses(@RequestParam String userId) {
         return qnaCategoryService.getAllQnaSelectResponses(userId);
