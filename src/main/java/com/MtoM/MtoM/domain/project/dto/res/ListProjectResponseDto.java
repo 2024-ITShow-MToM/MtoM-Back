@@ -53,13 +53,6 @@ public class ListProjectResponseDto {
 
     private Long getLongFromRedisValue(Map<Object, Object> redisValue, String key) {
         Object value = redisValue.get(key);
-        if (value instanceof Long) {
-            return (Long) value;
-        } else if (value instanceof String) {
-            return Long.parseLong((String) value);
-        } else if (value instanceof Integer) {
-            return ((Integer) value).longValue();
-        }
-        return null;
+        return (Long) value;
     }
 }

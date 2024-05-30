@@ -92,7 +92,10 @@ public class ProjectService {
         ProjectDomain project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("project not found", ErrorCode.PROJECT_NOTFOUND));
 
-        return new FindProjectResponseDto(project);
+        String redisKey = "project:" + project.getId();
+        Map<Object, Object> redisHash = redisTemplate.opsForHash().entries(redisKey);
+
+        return new FindProjectResponseDto(project, redisHash);
     }
 
     public MatchingProjectDomain applicationProject(ApplicationProjectRequestDto requestDto){
