@@ -46,12 +46,12 @@ public class ApplicationProjectService {
         Long currentMemberCount = redisService.getCurrentMemberCount(projectId, role);
 
         if (currentMemberCount == null || currentMemberCount <= 0) {
-            //Todo: 예외 핸들링 만들어서 처리하기
+            throw new ProjectAlreadyMatchException("project already match", ErrorCode.PROJECT_ALREADY_MATCH);
         }
 
         redisService.addCurrentMemberCount(projectId, role);
 
-        return requestDto.toEntity(user, project);
+        return matchingProjectRepository.save(requestDto.toEntity(user, project));
     }
 
     private String changeRoleName(String role){
