@@ -21,4 +21,19 @@ public class RedisService {
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
+
+    public void addCurrentMemberCount(Long projectId, String role) {
+        String redisKey = "project:" + projectId;
+        String field = "current" + capitalize(role) + "Personnel";
+
+        Object value = redisTemplate.opsForHash().get(redisKey, field);
+
+        Long incrementValue = 1L;
+        if (value == null || !(value instanceof Long)) {
+            value = 0L;
+        } else {
+            incrementValue = (Long) value + 1;
+        }
+        redisTemplate.opsForHash().put(redisKey, field, incrementValue);
+    }
 }
