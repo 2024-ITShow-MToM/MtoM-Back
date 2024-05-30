@@ -46,9 +46,9 @@ public class ProjectController {
     }
 
     @PostMapping("/application")
-    public ResponseEntity<ResponseMessage<MatchingProjectDomain>> applicationProject(@RequestBody ApplicationProjectRequestDto requestDto){
-        MatchingProjectDomain application = applicationProjectService.execute(requestDto);
-        return new ResponseEntity<>(new ResponseMessage<>("prject matching successfully", application), HttpStatus.CREATED);
+    public ResponseEntity<String> applicationProject(@RequestBody ApplicationProjectRequestDto requestDto){
+        applicationProjectService.execute(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트 신청에 성공했습니다");
     }
 
     @GetMapping("/major/{major}")
