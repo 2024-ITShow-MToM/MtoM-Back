@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.chat;
+package com.MtoM.MtoM.domain.chat.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

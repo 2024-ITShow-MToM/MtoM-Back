@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.chat;
+package com.MtoM.MtoM.domain.chat.service;
 
 import com.MtoM.MtoM.global.conifg.WebSocketHandler;
 import org.springframework.data.redis.connection.Message;

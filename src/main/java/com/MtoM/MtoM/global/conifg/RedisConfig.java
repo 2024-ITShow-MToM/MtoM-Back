@@ -1,6 +1,6 @@
 package com.MtoM.MtoM.global.conifg;
 
-import com.MtoM.MtoM.domain.chat.RedisMessageSubscriber;
+import com.MtoM.MtoM.domain.chat.service.RedisMessageSubscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

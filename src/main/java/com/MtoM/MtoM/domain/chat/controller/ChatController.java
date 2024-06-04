@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.chat;
+package com.MtoM.MtoM.domain.chat.controller;
 
 import com.MtoM.MtoM.domain.chat.domain.ChatMessage;
 import com.MtoM.MtoM.domain.chat.service.ChatMessageService;

@@ -1,6 +1,6 @@
 package com.MtoM.MtoM.global.conifg;
 
-import com.MtoM.MtoM.domain.chat.RedisMessagePublisher;
+import com.MtoM.MtoM.domain.chat.service.RedisMessagePublisher;
 import com.MtoM.MtoM.domain.chat.domain.ChatMessage;
 import com.MtoM.MtoM.domain.chat.service.ChatMessageService;
 import org.springframework.stereotype.Component;
