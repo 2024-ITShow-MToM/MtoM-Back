@@ -46,5 +46,4 @@ public class ChatMessageService {
     public List<ChatMessage> getMessages(String senderId, String receiverId) {
         return chatMessageRepository.findAll();
     }
-
 }

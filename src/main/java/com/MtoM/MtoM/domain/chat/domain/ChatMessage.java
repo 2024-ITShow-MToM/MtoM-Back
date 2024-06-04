@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+
 @Entity
 @Data
 public class ChatMessage {
@@ -28,4 +29,12 @@ public class ChatMessage {
     private String message;
     private LocalDateTime timestamp;
 
+    // 직렬화/역직렬화를 위한 메소드 추가
+    public String getSenderId() {
+        return sender != null ? sender.getId() : null;
+    }
+
+    public String getReceiverId() {
+        return receiver != null ? receiver.getId() : null;
+    }
 }
