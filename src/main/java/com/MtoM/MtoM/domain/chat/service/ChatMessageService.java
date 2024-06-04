@@ -16,6 +16,7 @@ import java.util.Optional;
 @Service
 public class ChatMessageService {
 
+
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
@@ -44,6 +45,18 @@ public class ChatMessageService {
     }
 
     public List<ChatMessage> getMessages(String senderId, String receiverId) {
-        return chatMessageRepository.findAll();
+        UserDomain sender = userRepository.findById(senderId).orElseThrow(() -> new RuntimeException("Sender not found"));
+        UserDomain receiver = userRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        return chatMessageRepository.findBySenderAndReceiver(sender, receiver);
+    }
+
+    public List<ChatMessage> getMessagesForUser(String userId) {
+        UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        return chatMessageRepository.findByReceiver(receiver);
+    }
+
+    public ChatMessage getLastMessageForUser(String userId) {
+        UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        return chatMessageRepository.findTopByReceiverOrderByTimestampDesc(receiver);
     }
 }
