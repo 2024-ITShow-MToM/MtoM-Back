@@ -10,4 +10,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findBySenderAndReceiver(UserDomain sender, UserDomain receiver);
     List<ChatMessage> findByReceiver(UserDomain receiver);
     ChatMessage findTopByReceiverOrderByTimestampDesc(UserDomain receiver);
+    List<ChatMessage> findByReceiverAndIsReadFalse(UserDomain receiver); // 새로운 메서드 추가
 }

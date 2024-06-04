@@ -16,7 +16,6 @@ import java.util.Optional;
 @Service
 public class ChatMessageService {
 
-
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
@@ -47,7 +46,12 @@ public class ChatMessageService {
     public List<ChatMessage> getMessages(String senderId, String receiverId) {
         UserDomain sender = userRepository.findById(senderId).orElseThrow(() -> new RuntimeException("Sender not found"));
         UserDomain receiver = userRepository.findById(receiverId).orElseThrow(() -> new RuntimeException("Receiver not found"));
-        return chatMessageRepository.findBySenderAndReceiver(sender, receiver);
+        List<ChatMessage> messages = chatMessageRepository.findBySenderAndReceiver(sender, receiver);
+        messages.forEach(message -> {
+            message.setRead(true);
+            chatMessageRepository.save(message);
+        });
+        return messages;
     }
 
     public List<ChatMessage> getMessagesForUser(String userId) {
@@ -58,5 +62,10 @@ public class ChatMessageService {
     public ChatMessage getLastMessageForUser(String userId) {
         UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         return chatMessageRepository.findTopByReceiverOrderByTimestampDesc(receiver);
+    }
+
+    public long countUnreadMessages(String userId) {
+        UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+        return chatMessageRepository.findByReceiverAndIsReadFalse(receiver).size();
     }
 }

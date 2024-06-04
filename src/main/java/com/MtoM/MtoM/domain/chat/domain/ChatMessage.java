@@ -29,6 +29,8 @@ public class ChatMessage {
     private String message;
     private LocalDateTime timestamp;
 
+    private boolean isRead = false;  // 메시지 읽었는지 안읽었는지 확인하는 필드 
+
     // 직렬화/역직렬화를 위한 메소드 추가
     public String getSenderId() {
         return sender != null ? sender.getId() : null;

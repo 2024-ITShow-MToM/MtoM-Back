@@ -35,9 +35,10 @@ public class ChatController {
     public Map<String, Object> getNotifications(@RequestParam String userId) {
         List<ChatMessage> messages = chatMessageService.getMessagesForUser(userId);
         ChatMessage lastMessage = chatMessageService.getLastMessageForUser(userId);
+        long unreadMessageCount = chatMessageService.countUnreadMessages(userId);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("messageCount", messages.size());
+        response.put("unreadMessageCount", unreadMessageCount);
         response.put("lastMessage", lastMessage != null ? lastMessage.getMessage() : null);
         response.put("lastMessageTime", lastMessage != null ? lastMessage.getTimestamp() : null);
         response.put("lastSenderId", lastMessage != null ? lastMessage.getSender().getId() : null);
