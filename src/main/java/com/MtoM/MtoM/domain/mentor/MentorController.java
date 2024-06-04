@@ -3,7 +3,7 @@ package com.MtoM.MtoM.domain.mentor;
 import com.MtoM.MtoM.domain.mentor.domain.MentorDomain;
 import com.MtoM.MtoM.domain.mentor.dto.req.MentorMatchingRequestDto;
 import com.MtoM.MtoM.domain.mentor.service.MentorService;
-import com.MtoM.MtoM.global.ResponseMessage;
+import com.MtoM.MtoM.global.message.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
