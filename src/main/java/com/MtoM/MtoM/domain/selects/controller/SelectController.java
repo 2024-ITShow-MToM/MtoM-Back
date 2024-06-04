@@ -5,6 +5,7 @@ import com.MtoM.MtoM.domain.selects.dto.CreateSelectDTO;
 import com.MtoM.MtoM.domain.selects.service.SelectService;
 import com.MtoM.MtoM.domain.selects.service.VoteService;
 import com.MtoM.MtoM.global.message.ResponseMessage;
+import com.MtoM.MtoM.global.message.ResponsePayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,36 +26,36 @@ public class SelectController {
 
 
     @GetMapping
-    public ResponseEntity<ResponseMessage<List<SelectDomain>>> getAllSelects() {
+    public ResponseEntity<ResponsePayload<List<SelectDomain>>> getAllSelects() {
         List<SelectDomain> selects = selectService.getAllSelects();
-        return new ResponseEntity<>(new ResponseMessage<>("Selects retrieved successfully", selects), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponsePayload<>("Selects retrieved successfully", selects), HttpStatus.OK);
     }
 
 
     @PostMapping
-    public ResponseEntity<ResponseMessage<SelectDomain>> createSelect(@RequestBody CreateSelectDTO select) {
+    public ResponseEntity<ResponsePayload<SelectDomain>> createSelect(@RequestBody CreateSelectDTO select) {
         SelectDomain createdSelect = selectService.createSelect(select);
-        return new ResponseEntity<>(new ResponseMessage<>("Select created successfully", createdSelect), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponsePayload<>("Select created successfully", createdSelect), HttpStatus.CREATED);
     }
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseMessage<Void>> updateSelect(@PathVariable Long id, @RequestBody CreateSelectDTO selectDTO, @RequestParam String userId) {
+    public ResponseEntity<ResponsePayload<Void>> updateSelect(@PathVariable Long id, @RequestBody CreateSelectDTO selectDTO, @RequestParam String userId) {
         try {
             selectService.updateSelect(id, selectDTO, userId);
-            return new ResponseEntity<>(new ResponseMessage<>("Select updated successfully", null), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponsePayload<>("Select updated successfully", null), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(new ResponseMessage<>(e.getMessage(), null), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ResponsePayload<>(e.getMessage(), null), HttpStatus.UNAUTHORIZED);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseMessage<Void>> deleteSelect(@PathVariable Long id, @RequestParam String userId) {
+    public ResponseEntity<ResponsePayload<Void>> deleteSelect(@PathVariable Long id, @RequestParam String userId) {
         try {
             selectService.deleteSelect(id, userId);
-            return new ResponseEntity<>(new ResponseMessage<>("Select deleted successfully", null), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponsePayload<>("Select deleted successfully", null), HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(new ResponseMessage<>(e.getMessage(), null), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ResponsePayload<>(e.getMessage(), null), HttpStatus.UNAUTHORIZED);
         }
     }
 

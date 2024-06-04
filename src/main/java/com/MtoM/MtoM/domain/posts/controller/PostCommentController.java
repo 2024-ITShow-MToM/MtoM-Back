@@ -4,6 +4,7 @@ import com.MtoM.MtoM.domain.posts.dto.CreatePostComment;
 import com.MtoM.MtoM.domain.posts.dto.UpdatePostComment;
 import com.MtoM.MtoM.domain.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.posts.service.PostCommentService;
+import com.MtoM.MtoM.global.message.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,9 @@ public class PostCommentController {
 
     // 댓글 생성 API
     @PostMapping
-    public ResponseEntity<String> createComment(@RequestBody CreatePostComment createPostComment) {
+    public ResponseEntity<ResponseMessage> createComment(@RequestBody CreatePostComment createPostComment) {
         postCommentService.createComment(createPostComment);
-        return ResponseEntity.status(HttpStatus.CREATED).body("댓글이 성공적으로 생성되었습니다.");
+        return ResponseEntity.ok(new ResponseMessage("댓글이 성공적으로 생성되었습니다."));
     }
 
     // 댓글 수정 API

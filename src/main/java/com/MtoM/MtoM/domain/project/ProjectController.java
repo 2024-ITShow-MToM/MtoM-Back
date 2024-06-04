@@ -8,7 +8,8 @@ import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.service.ProjectService;
-import com.MtoM.MtoM.global.message.ResponseMessage;
+import com.MtoM.MtoM.global.message.ResponsePayload;
+import com.MtoM.MtoM.global.message.ResponsePayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,32 +25,32 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<ResponseMessage<ProjectDomain>> registerProject(@ModelAttribute RegisterProjectRequestDto requestDto) throws IOException {
+    public ResponseEntity<ResponsePayload<ProjectDomain>> registerProject(@ModelAttribute RegisterProjectRequestDto requestDto) throws IOException {
         ProjectDomain project =  projectService.registerProject(requestDto);
-        return new ResponseEntity<>(new ResponseMessage<>("Project created successfully", project), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponsePayload<>("Project created successfully", project), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<ResponseMessage<List<ListProjectResponseDto>>> listProject(){
+    public ResponseEntity<ResponsePayload<List<ListProjectResponseDto>>> listProject(){
         List<ListProjectResponseDto> projects = projectService.listProject();
-        return new ResponseEntity<>(new ResponseMessage<>("Projects retrieved successfully", projects), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponsePayload<>("Projects retrieved successfully", projects), HttpStatus.OK);
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<ResponseMessage<FindProjectResponseDto>> findProject(@PathVariable("projectId") Long projectId){
+    public ResponseEntity<ResponsePayload<FindProjectResponseDto>> findProject(@PathVariable("projectId") Long projectId){
         FindProjectResponseDto project = projectService.findProject(projectId);
-        return new ResponseEntity<>(new ResponseMessage<>("prject reterieved successfully", project), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponsePayload<>("prject reterieved successfully", project), HttpStatus.OK);
     }
 
     @PostMapping("/application")
-    public ResponseEntity<ResponseMessage<MatchingProjectDomain>> applicationProject(@RequestBody ApplicationProjectRequestDto requestDto){
+    public ResponseEntity<ResponsePayload<MatchingProjectDomain>> applicationProject(@RequestBody ApplicationProjectRequestDto requestDto){
         MatchingProjectDomain application = projectService.applicationProject(requestDto);
-        return new ResponseEntity<>(new ResponseMessage<>("prject matching successfully", application), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponsePayload<>("prject matching successfully", application), HttpStatus.CREATED);
     }
 
     @GetMapping("/major/{major}")
-    public ResponseEntity<ResponseMessage<List<FindMajorProjectResponseDto>>> majorProject(@PathVariable("major") String major){
+    public ResponseEntity<ResponsePayload<List<FindMajorProjectResponseDto>>> majorProject(@PathVariable("major") String major){
         List<FindMajorProjectResponseDto> projects = projectService.findMajorProject(major);
-        return new ResponseEntity<>(new ResponseMessage<>("project reterieved successfully", projects), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponsePayload<>("project reterieved successfully", projects), HttpStatus.OK);
     }
 }
