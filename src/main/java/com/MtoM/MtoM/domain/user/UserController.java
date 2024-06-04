@@ -2,8 +2,6 @@ package com.MtoM.MtoM.domain.user;
 
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaPostResponse;
 import com.MtoM.MtoM.domain.qna.categroy.service.QnaCategoryService;
-import com.MtoM.MtoM.domain.qna.posts.domain.PostDomain;
-import com.MtoM.MtoM.domain.qna.posts.service.PostService;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;

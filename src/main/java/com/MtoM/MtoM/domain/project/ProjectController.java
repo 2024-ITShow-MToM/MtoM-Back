@@ -8,7 +8,7 @@ import com.MtoM.MtoM.domain.project.dto.res.FindProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.res.ListProjectResponseDto;
 import com.MtoM.MtoM.domain.project.dto.req.RegisterProjectRequestDto;
 import com.MtoM.MtoM.domain.project.service.ProjectService;
-import com.MtoM.MtoM.global.ResponseMessage;
+import com.MtoM.MtoM.global.message.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

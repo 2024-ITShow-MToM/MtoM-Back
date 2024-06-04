@@ -3,12 +3,9 @@ package com.MtoM.MtoM.domain.qna.categroy;
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaPostResponse;
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaSelectResponse;
 import com.MtoM.MtoM.domain.qna.categroy.service.QnaCategoryService;
-import com.MtoM.MtoM.domain.qna.selects.service.VoteService;
-import io.lettuce.core.dynamic.annotation.Param;
+import com.MtoM.MtoM.domain.selects.service.VoteService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

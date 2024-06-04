@@ -1,6 +1,7 @@
 package com.MtoM.MtoM.domain.qna.posts.controller;
 
-import com.MtoM.MtoM.domain.qna.posts.service.PostService;
+import com.MtoM.MtoM.domain.posts.controller.PostController;
+import com.MtoM.MtoM.domain.posts.service.PostService;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
@@ -17,8 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(PostController.class)
 public class PostControllerTest {
