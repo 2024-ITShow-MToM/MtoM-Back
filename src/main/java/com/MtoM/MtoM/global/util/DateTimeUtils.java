@@ -1,6 +1,7 @@
 package com.MtoM.MtoM.global.util;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -32,5 +33,12 @@ public class DateTimeUtils {
         } else {
             return duration.toDays() / 365 + "년 전";
         }
+    }
+
+    // createdAt 문자열을 LocalDateTime으로 파싱하는 메소드
+    public static LocalDateTime parseLocalDateTime(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        java.time.LocalDate localDate = LocalDate.parse(dateString, formatter);
+        return localDate.atStartOfDay();
     }
 }

@@ -14,6 +14,8 @@ import com.MtoM.MtoM.domain.selects.repository.SelectRepository;
 import com.MtoM.MtoM.domain.selects.service.VoteService;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
+import com.MtoM.MtoM.global.util.DateTimeUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,26 +29,21 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class QnaCategoryService {
 
     @Autowired
     private final PostRepository postRepository;
-
     @Autowired
     private final SelectRepository selectRepository;
-
     @Autowired
     private final PostRedisService redisService;
-
     @Autowired
     private final VoteService voteService;
-
     @Autowired
     private final PostCommentRedisService postCommentRedisService;
-
     @Autowired
     private final UserRepository userRepository;
-
     @Autowired
     private final PostCommentRepository postCommentRepository;
     @Autowired
@@ -56,21 +53,10 @@ public class QnaCategoryService {
     @Autowired
     private RedisTemplate<String, String> stringRedisTemplate;
 
-
+    // Redis 키 접두사 상수 선언
     private static final String VIEW_COUNT_KEY_PREFIX = "post:count:";
     private static final String VOTE_COUNT_PREFIX = "votes:count:";
     private static final String USER_VOTES_PREFIX = "user:votes:";
-
-    public QnaCategoryService(PostRepository postRepository, SelectRepository selectRepository, PostRedisService redisService, VoteService voteService, PostCommentRedisService postCommentRedisService, UserRepository userRepository, PostCommentRepository postCommentRepository, S3Service s3Service) {
-        this.postRepository = postRepository;
-        this.selectRepository = selectRepository;
-        this.redisService = redisService;
-        this.voteService = voteService;
-        this.postCommentRedisService = postCommentRedisService;
-        this.userRepository = userRepository;
-        this.postCommentRepository = postCommentRepository;
-        this.s3Service = s3Service;
-    }
 
     public List<QnaPostResponse> getQnaPostsSortedByComments() {
         List<PostDomain> posts = postRepository.findAll();
@@ -120,7 +106,7 @@ public class QnaCategoryService {
             response.setCommentCount(comments.size());
             response.setHeartCount(redisService.getPostHearts(post.getId()));
             response.setViewCount(redisService.getViewCount(post.getId()));
-            response.setCreatedAt(formatDate(post.getCreatedAt()));
+            response.setCreatedAt(DateTimeUtils.formatDate(post.getCreatedAt()));
             return response;
         }).collect(Collectors.toList());
     }
@@ -135,14 +121,13 @@ public class QnaCategoryService {
         response.setCommentCount(comments.size());
         response.setHeartCount(redisService.getPostHearts(post.getId()));
         response.setViewCount(redisService.getViewCount(post.getId()));
-        response.setCreatedAt(formatDate(post.getCreatedAt()));
+        response.setCreatedAt(DateTimeUtils.formatDate(post.getCreatedAt()));
         return response;
     }
 
     // 게시물 리스트
     public List<QnaPostResponse> getQnaPosts() {
         List<PostDomain> posts = postRepository.findAll();
-
 
         return posts.stream().map(post -> {
             List<PostCommentDomain> comments = postCommentRepository.findByPostId(post.getId());
@@ -154,16 +139,10 @@ public class QnaCategoryService {
             response.setCommentCount(comments.size());
             response.setHeartCount(redisService.getPostHearts(post.getId()));
             response.setViewCount(redisService.getViewCount(post.getId()));
-            response.setCreatedAt(formatDate(post.getCreatedAt()));
+            response.setCreatedAt(DateTimeUtils.formatDate(post.getCreatedAt()));
             return response;
         }).collect(Collectors.toList());
     }
-
-    private String formatDate(LocalDateTime dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        return dateTime.format(formatter);
-    }
-
 
     public List<QnaSelectResponse> getAllQnaSelectResponses(String userId) {
         List<SelectDomain> allSelectDomains = selectRepository.findAll();
@@ -224,14 +203,13 @@ public class QnaCategoryService {
             QnaSelectResponse qnaSelectResponse = new QnaSelectResponse();
             qnaSelectResponse.setSelectId(selectId);
             qnaSelectResponse.setTitle(selectDomain.getTitle());
-            qnaSelectResponse.setCreatedAt(formatDate(selectDomain.getCreatedAt()));
+            qnaSelectResponse.setCreatedAt(DateTimeUtils.formatDate(selectDomain.getCreatedAt()));
             qnaSelectResponse.setParticipants((int) totalVotes);
             qnaSelectResponse.setUserSelect(userSelectedOption); // user가 선택한 옵션을 설정
             qnaSelectResponse.setOptions(List.of(voteOptionResponse));
 
             qnaSelectResponses.add(qnaSelectResponse);
         }
-
         // 최신순으로 정렬
         qnaSelectResponses.sort(Comparator.comparing(QnaSelectResponse::getCreatedAt).reversed());
 
@@ -288,21 +266,11 @@ public class QnaCategoryService {
     private LocalDateTime getCreatedAt(Object obj) {
         if (obj instanceof QnaPostResponse) {
             String createdAtString = ((QnaPostResponse) obj).getCreatedAt();
-            return parseLocalDateTime(createdAtString);
+            return DateTimeUtils.parseLocalDateTime(createdAtString);
         } else if (obj instanceof QnaSelectResponse) {
             String createdAtString = ((QnaSelectResponse) obj).getCreatedAt();
-            return parseLocalDateTime(createdAtString);
+            return DateTimeUtils.parseLocalDateTime(createdAtString);
         }
         return null;
     }
-
-    // createdAt 문자열을 LocalDateTime으로 파싱하는 메소드
-    private LocalDateTime parseLocalDateTime(String dateString) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-        java.time.LocalDate localDate = LocalDate.parse(dateString, formatter);
-        return localDate.atStartOfDay();
-    }
-
-
-
 }
