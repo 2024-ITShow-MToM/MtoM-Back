@@ -13,9 +13,11 @@ import com.MtoM.MtoM.domain.posts.repository.PostRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.S3Service.S3Service;
+import com.MtoM.MtoM.global.message.ResponseMessage;
 import com.MtoM.MtoM.global.util.DateTimeUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PostService {
 
@@ -40,9 +43,10 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostCommentRepository postCommentRepository;
     private final S3Service s3Service;
-    private RedisTemplate<String, Integer> redisTemplate;
 
+    // Redis 키 접두사 상수 선언
     private static final String VIEW_COUNT_KEY_PREFIX = "post:count:";
+    private RedisTemplate<String, Integer> redisTemplate;
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
     @Transactional
@@ -83,7 +87,7 @@ public class PostService {
     }
 
     // 게시물 생성
-    public ResponseEntity<String> createPost(CreatePostDTO postDTO) {
+    public ResponseEntity<ResponseMessage> createPost(CreatePostDTO postDTO) {
         // CreatePostDTO에서 필요한 정보를 사용하여 PostDomain 객체 생성
         PostDomain post = new PostDomain();
         post.setTitle(postDTO.getTitle());
@@ -102,23 +106,17 @@ public class PostService {
                 String imgUrl = s3Service.uploadImage(imgFile, "post");
                 post.setImg(imgUrl);
             } catch (IOException e) {
-                return new ResponseEntity<>("{\"message\": \"이미지 업로드 중 오류가 발생했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new ResponseMessage("이미지 업로드 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-
         // PostRepository를 통해 저장
         postRepository.save(post);
 
-        // 저장된 메시지를 JSON 형식으로 반환
-        String responseJson = "{"
-                + "\"message\": \"게시물이 성공적으로 생성되었습니다.\""
-                + "}";
-
-        return new ResponseEntity<>(responseJson, HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseMessage("게시물이 성공적으로 생성되었습니다."), HttpStatus.CREATED);
     }
 
     // 게시물 수정
-    public ResponseEntity<String> updatePost(Long postId, UpdatePostDTO updatedPostDTO, String userId) {
+    public ResponseEntity<ResponseMessage> updatePost(Long postId, UpdatePostDTO updatedPostDTO, String userId) {
         PostDomain existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         if (!existingPost.getUser().getId().equals(userId)) {
@@ -138,21 +136,16 @@ public class PostService {
                 String imgUrl = s3Service.uploadImage(imgFile, "post");
                 existingPost.setImg(imgUrl);
             } catch (IOException e) {
-                return new ResponseEntity<>("{\"message\": \"이미지 업로드 중 오류가 발생했습니다.\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new ResponseMessage("이미지 업로드 중 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-
         postRepository.save(existingPost);
 
-        String responseJson = "{"
-                + "\"message\": \"게시물이 성공적으로 수정되었습니다.\""
-                + "}";
-
-        return new ResponseEntity<>(responseJson, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessage("게시물이 성공적으로 수정되었습니다."), HttpStatus.OK);
     }
 
     // 게시물 삭제
-    public ResponseEntity<String> deletePost(Long postId, String userId) {
+    public ResponseEntity<ResponseMessage> deletePost(Long postId, String userId) {
         PostDomain existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         if (!existingPost.getUser().getId().equals(userId)) {
@@ -162,14 +155,9 @@ public class PostService {
         if (existingPost.getImg() != null) {
             s3Service.deleteImage(existingPost.getImg());
         }
-
         postRepository.deleteById(postId);
 
-        String responseJson = "{"
-                + "\"message\": \"게시물이 성공적으로 삭제되었습니다.\""
-                + "}";
-
-        return new ResponseEntity<>(responseJson, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessage("게시물이 성공적으로 삭제되었습니다."), HttpStatus.OK);
     }
 
     public void togglePostHeart(String userId, Long postId) { // userId를 문자열로 사용
@@ -264,7 +252,7 @@ public class PostService {
                 userResponse.setName(user.getStudent_id() + " " + user.getName());
                 userResponses.add(userResponse);
             } catch (IllegalArgumentException e) {
-                System.err.println("User not found for ID: " + userId);
+                log.error("User not found for ID: " + userId);
             }
         }
         response.setUsers(userResponses);

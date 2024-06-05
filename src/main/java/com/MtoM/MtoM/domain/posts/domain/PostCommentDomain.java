@@ -42,5 +42,4 @@ public class PostCommentDomain {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
 }

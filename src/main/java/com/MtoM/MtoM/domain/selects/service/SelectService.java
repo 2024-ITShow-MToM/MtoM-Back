@@ -15,7 +15,6 @@ import java.util.Optional;
 public class SelectService {
     @Autowired
     private SelectRepository selectRepository;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -24,12 +23,10 @@ public class SelectService {
     }
 
     public Optional<SelectDomain> getSelectById(Long id) {
-
         return selectRepository.findById(id);
     }
 
     public SelectDomain createSelect(CreateSelectDTO selectDTO) {
-
         SelectDomain select = new SelectDomain();
         select.setTitle(selectDTO.getTitle());
         select.setOption1(selectDTO.getOption1());
@@ -44,7 +41,6 @@ public class SelectService {
 
         return selectRepository.save(select);
     }
-
 
     public void updateSelect(Long id, CreateSelectDTO selectDTO, String userId) {
         Optional<SelectDomain> existingSelect = selectRepository.findById(id);

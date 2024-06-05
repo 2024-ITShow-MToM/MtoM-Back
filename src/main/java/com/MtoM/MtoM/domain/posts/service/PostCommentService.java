@@ -32,6 +32,7 @@ public class PostCommentService {
     private final PostCommentRedisService postCommentRedisService;
     private final S3Service s3Service;
 
+    // Redis 키 접두사 상수 선언
     private static final String HEART_COUNT_KEY_PREFIX = "post:comment:heart";
     private final RedisTemplate<String,Integer> redisTemplate;
 
@@ -147,5 +148,4 @@ public class PostCommentService {
         // 게시물 댓글 하트 토글
         postCommentRedisService.getPostCommentHearts(commentId);
     }
-
 }

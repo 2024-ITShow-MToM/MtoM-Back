@@ -3,18 +3,16 @@ package com.MtoM.MtoM.domain.chat.controller;
 import com.MtoM.MtoM.domain.chat.domain.ChatMessage;
 import com.MtoM.MtoM.domain.chat.dto.ChatMessageDTO;
 import com.MtoM.MtoM.domain.chat.service.ChatMessageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
+@RequiredArgsConstructor
 public class WebSocketController {
 
     private final ChatMessageService chatMessageService;
-
-    public WebSocketController(ChatMessageService chatMessageService) {
-        this.chatMessageService = chatMessageService;
-    }
 
     @MessageMapping("/sendMessage")
     @SendTo("/topic/messages")

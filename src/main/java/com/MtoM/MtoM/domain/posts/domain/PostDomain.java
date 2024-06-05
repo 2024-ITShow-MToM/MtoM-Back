@@ -44,7 +44,6 @@ public class PostDomain {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // 추가
     private List<PostCommentDomain> comments;
 
-
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -52,5 +51,4 @@ public class PostDomain {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
 }

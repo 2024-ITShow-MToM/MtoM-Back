@@ -42,22 +42,20 @@ public class QnaController {
         }
     }
 
-
     @GetMapping("/selects")
     public List<QnaSelectResponse> getAllQnaSelectResponses(@RequestParam String userId) {
         return qnaCategoryService.getAllQnaSelectResponses(userId);
     }
 
-
     @GetMapping("/result/{selectId}")
     public Map<String, Double> getVoteResult(@PathVariable Long selectId) {
         return voteService.getVotePercentages(selectId);
     }
+
     @GetMapping
     public List<Object> getQnaPostsAndSelectsSortedByCreatedAt(
             @RequestParam String userId,
             @RequestParam(required = false) String keyword) {
         return qnaCategoryService.getQnaPostsAndSelectsSortedByCreatedAt(userId,keyword);
     }
-
 }
