@@ -51,8 +51,7 @@ public class PostCommentRedisService {
         String key = HEART_COUNT_KEY_PREFIX + postId;
         return redisTemplate.opsForHash().keys(key)
                 .stream()
-                .map(Object::toString) // Ensure all keys are converted to String
+                .map(Object::toString)
                 .collect(Collectors.toSet());
     }
-
 }

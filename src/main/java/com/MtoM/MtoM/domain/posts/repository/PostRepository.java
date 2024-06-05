@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<PostDomain, Long> {
     PostDomain findById(long id);
-
     List<PostDomain> findAllByUserId(String userId);
 }

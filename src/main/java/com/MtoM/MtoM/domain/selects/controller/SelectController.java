@@ -24,20 +24,17 @@ public class SelectController {
     @Autowired
     private final VoteService voteService;
 
-
     @GetMapping
     public ResponseEntity<ResponsePayload<List<SelectDomain>>> getAllSelects() {
         List<SelectDomain> selects = selectService.getAllSelects();
         return new ResponseEntity<>(new ResponsePayload<>("Selects retrieved successfully", selects), HttpStatus.OK);
     }
 
-
     @PostMapping
     public ResponseEntity<ResponsePayload<SelectDomain>> createSelect(@RequestBody CreateSelectDTO select) {
         SelectDomain createdSelect = selectService.createSelect(select);
         return new ResponseEntity<>(new ResponsePayload<>("Select created successfully", createdSelect), HttpStatus.CREATED);
     }
-
 
     @PatchMapping("/{id}")
     public ResponseEntity<ResponsePayload<Void>> updateSelect(@PathVariable Long id, @RequestBody CreateSelectDTO selectDTO, @RequestParam String userId) {
@@ -59,7 +56,6 @@ public class SelectController {
         }
     }
 
-
     // 사용자 투표를 처리하는 엔드포인트
     @PostMapping("/{selectId}/{option}")
     public void vote(@PathVariable Long selectId, @PathVariable String option, @RequestParam String userId) {
@@ -71,5 +67,4 @@ public class SelectController {
     public Map<Object, Object> getVoteResults(@PathVariable Long selectId) {
         return voteService.getVoteResult(selectId);
     }
-
 }

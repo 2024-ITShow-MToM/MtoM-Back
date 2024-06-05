@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.selects.service;
 
 import com.MtoM.MtoM.domain.selects.domain.SelectDomain;
 import com.MtoM.MtoM.domain.selects.repository.SelectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -9,18 +10,17 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class VoteService {
+
+    @Autowired
+    private final SelectRepository selectRepository;
+
+    // Redis 키 접두사 상수 선언
     private final RedisTemplate<String, String> redisTemplate;
     private static final String VOTE_COUNT_PREFIX = "votes:count:";
     private static final String VOTE_USERS_PREFIX = "votes:users:";
     private static final String USER_VOTES_PREFIX = "user:votes:";
-    @Autowired
-    private final SelectRepository selectRepository;
-
-    public VoteService(RedisTemplate<String, String> redisTemplate, SelectRepository selectRepository) {
-        this.redisTemplate = redisTemplate;
-        this.selectRepository = selectRepository;
-    }
 
     public void vote(Long selectId, String option, String userId) {
         String voteCountKey = VOTE_COUNT_PREFIX + selectId;
