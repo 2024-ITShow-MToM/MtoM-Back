@@ -6,6 +6,7 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
+import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
 import com.MtoM.MtoM.domain.user.service.UserService;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -55,20 +56,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
-    @GetMapping
-    public ResponseEntity<UserDomain> findByUser (@RequestParam String userId){
-        UserDomain user = userService.findByUser(userId);
+    @GetMapping("/{userId}")
+    public ResponseEntity<FindByUserResponseDto> findByUser (@PathVariable("userId") String userId){
+        FindByUserResponseDto user = userService.findByUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @GetMapping("/profile/img")
-    public ResponseEntity<String> findByProfileImg(@RequestParam String userId){
+    @GetMapping("/profile/img/{userId}")
+    public ResponseEntity<String> findByProfileImg(@PathVariable("userId") String userId){
         String profileImgURL = s3UploadService.getImagePath(userId);
         return ResponseEntity.status(HttpStatus.OK).body(profileImgURL);
     }
 
-    @GetMapping("/posts")
-    public List<QnaPostResponse>  getQnaPostsByUser(@RequestParam String userId) {
+    @GetMapping("/posts/{userId}")
+    public List<QnaPostResponse>  getQnaPostsByUser(@PathVariable("userId") String userId) {
         return postService.getQnaPostsByUser(userId);
     }
 }

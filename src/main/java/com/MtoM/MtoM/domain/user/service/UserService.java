@@ -5,6 +5,7 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
+import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
 import com.MtoM.MtoM.domain.user.repository.SkillRepository;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.exception.*;
@@ -75,12 +76,12 @@ public class UserService {
         return id;
     }
 
-    public UserDomain findByUser(String id){
+    public FindByUserResponseDto findByUser(String id){
         checkId(id);
 
         Optional<UserDomain> optionalUser = userRepository.findById(id);
         UserDomain user = optionalUser.get();
-        return user;
+        return new FindByUserResponseDto(user);
     }
 
     public void duplicateId(String id){
