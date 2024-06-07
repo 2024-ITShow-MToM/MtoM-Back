@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.user;
 
+import com.MtoM.MtoM.domain.qna.categroy.dao.QnaPostResponse;
+import com.MtoM.MtoM.domain.qna.categroy.service.QnaCategoryService;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
@@ -13,12 +15,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final QnaCategoryService postService;
     private final S3Service s3UploadService;
 
     @PostMapping
@@ -61,5 +65,10 @@ public class UserController {
     public ResponseEntity<String> findByProfileImg(@RequestParam String userId){
         String profileImgURL = s3UploadService.getImagePath(userId);
         return ResponseEntity.status(HttpStatus.OK).body(profileImgURL);
+    }
+
+    @GetMapping("/posts")
+    public List<QnaPostResponse>  getQnaPostsByUser(@RequestParam String userId) {
+        return postService.getQnaPostsByUser(userId);
     }
 }
