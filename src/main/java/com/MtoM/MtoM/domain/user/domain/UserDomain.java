@@ -39,7 +39,6 @@ public class UserDomain {
     @Column(unique = true)
     private String email;
 
-    @JsonIgnore
     private String profile;
 
     private String mbti;
