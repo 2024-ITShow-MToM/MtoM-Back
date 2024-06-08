@@ -7,6 +7,7 @@ import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindAllUserResponseDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
+import com.MtoM.MtoM.domain.user.dto.res.SearchUserResponseDto;
 import com.MtoM.MtoM.domain.user.repository.SkillRepository;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import com.MtoM.MtoM.global.exception.*;
@@ -94,6 +95,15 @@ public class UserService {
 
         return users.stream()
                 .map(FindAllUserResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SearchUserResponseDto> searchUser(String searchResult){
+        List<UserDomain> users= userRepository.searchUsers(searchResult);
+
+        return users.stream()
+                .map(SearchUserResponseDto::new)
                 .collect(Collectors.toList());
     }
 

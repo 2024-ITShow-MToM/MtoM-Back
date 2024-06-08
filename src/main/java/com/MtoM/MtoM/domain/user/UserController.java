@@ -8,6 +8,7 @@ import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindAllUserResponseDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
+import com.MtoM.MtoM.domain.user.dto.res.SearchUserResponseDto;
 import com.MtoM.MtoM.domain.user.service.UserService;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +79,12 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<FindAllUserResponseDto>> findAllUser(){
         List<FindAllUserResponseDto> users = userService.findAllUser();
+        return ResponseEntity.ok().body(users);
+    }
+
+    @GetMapping("/searches/{searchResult}")
+    public ResponseEntity<List<SearchUserResponseDto>> searchUser(@PathVariable("searchResult") String searchResult){
+        List<SearchUserResponseDto> users = userService.searchUser(searchResult);
         return ResponseEntity.ok().body(users);
     }
 }
