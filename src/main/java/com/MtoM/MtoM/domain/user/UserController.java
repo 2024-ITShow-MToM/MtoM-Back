@@ -6,10 +6,12 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
+import com.MtoM.MtoM.domain.user.dto.res.FindAllUserResponseDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
 import com.MtoM.MtoM.domain.user.service.UserService;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +73,11 @@ public class UserController {
     @GetMapping("/posts/{userId}")
     public List<QnaPostResponse>  getQnaPostsByUser(@PathVariable("userId") String userId) {
         return postService.getQnaPostsByUser(userId);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<FindAllUserResponseDto>> findAllUser(){
+        List<FindAllUserResponseDto> users = userService.findAllUser();
+        return ResponseEntity.ok().body(users);
     }
 }

@@ -5,6 +5,7 @@ import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
+import com.MtoM.MtoM.domain.user.dto.res.FindAllUserResponseDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
 import com.MtoM.MtoM.domain.user.repository.SkillRepository;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
@@ -17,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
@@ -36,7 +39,6 @@ public class UserService {
         userRepository.save(requestDto.toEntity(password));
     }
 
-    @Transactional
     public void registerProfileInfo(RegisterProfileInfoDto requestDto){
         String id = requestDto.getUserId().getId();
         checkId(id);
@@ -76,6 +78,7 @@ public class UserService {
         return id;
     }
 
+    @Transactional(readOnly = true)
     public FindByUserResponseDto findByUser(String id){
         checkId(id);
 
@@ -84,11 +87,22 @@ public class UserService {
         return new FindByUserResponseDto(user);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<FindAllUserResponseDto> findAllUser(){
+        List<UserDomain> users = userRepository.findAll();
+
+        return users.stream()
+                .map(FindAllUserResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
     public void duplicateId(String id){
         if(userRepository.existsById(id)){
             throw new IdDuplicateException("id duplicated", ErrorCode.ID_DUPLICATION);
         }
     }
+
 
     public void duplicatedEmail(String email){
         if(userRepository.existsByEmail(email)){
