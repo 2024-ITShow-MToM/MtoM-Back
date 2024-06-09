@@ -2,6 +2,7 @@ package com.MtoM.MtoM.domain.chat.service;
 
 
 import com.MtoM.MtoM.domain.chat.domain.ChatMessage;
+import com.MtoM.MtoM.domain.chat.dto.ChatParticipantInfo;
 import com.MtoM.MtoM.domain.chat.repository.ChatMessageRepository;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,4 +70,26 @@ public class ChatMessageService {
         UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
         return chatMessageRepository.findByReceiverAndIsReadFalse(receiver).size();
     }
+
+    public List<ChatParticipantInfo> getChatParticipantsInfo(String userId) {
+        UserDomain user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        List<UserDomain> chatPartners = chatMessageRepository.findChatPartners(user);
+
+        List<ChatParticipantInfo> participantsInfo = new ArrayList<>();
+        for (UserDomain partner : chatPartners) {
+            ChatMessage lastMessage = chatMessageRepository.findTopByReceiverOrSenderOrderByTimestampDesc(user, partner);
+            long unreadMessageCount = chatMessageRepository.countByReceiverAndSenderAndIsReadFalse(user, partner);
+
+            ChatParticipantInfo info = new ChatParticipantInfo();
+            info.setUserId(partner.getId());
+            info.setLastMessage(lastMessage != null ? lastMessage.getMessage() : null);
+            info.setUnreadMessageCount(unreadMessageCount);
+            info.setLastMessageTime(lastMessage != null ? lastMessage.getTimestamp() : null);
+
+            participantsInfo.add(info);
+        }
+
+        return participantsInfo;
+    }
+
 }
