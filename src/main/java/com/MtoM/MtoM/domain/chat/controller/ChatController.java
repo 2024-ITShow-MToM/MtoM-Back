@@ -1,6 +1,7 @@
 package com.MtoM.MtoM.domain.chat.controller;
 
 import com.MtoM.MtoM.domain.chat.domain.ChatMessage;
+import com.MtoM.MtoM.domain.chat.dto.ChatParticipantInfo;
 import com.MtoM.MtoM.domain.chat.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,17 +38,8 @@ public class ChatController {
     }
 
     @GetMapping("/chat/notifications")
-    public Map<String, Object> getNotifications(@RequestParam String userId) {
-        List<ChatMessage> messages = chatMessageService.getMessagesForUser(userId);
-        ChatMessage lastMessage = chatMessageService.getLastMessageForUser(userId);
-        long unreadMessageCount = chatMessageService.countUnreadMessages(userId);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("unreadMessageCount", unreadMessageCount);
-        response.put("lastMessage", lastMessage != null ? lastMessage.getMessage() : null);
-        response.put("lastMessageTime", lastMessage != null ? lastMessage.getTimestamp() : null);
-        response.put("lastSenderId", lastMessage != null ? lastMessage.getSender().getId() : null);
-
-        return response;
+    public List<ChatParticipantInfo> getNotifications(@RequestParam String userId) {
+        return chatMessageService.getChatParticipantsInfo(userId);
     }
+
 }
