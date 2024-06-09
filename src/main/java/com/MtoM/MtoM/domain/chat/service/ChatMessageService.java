@@ -77,8 +77,8 @@ public class ChatMessageService {
 
         List<ChatParticipantInfo> participantsInfo = new ArrayList<>();
         for (UserDomain partner : chatPartners) {
-            ChatMessage lastMessage = chatMessageRepository.findTopByReceiverOrSenderOrderByTimestampDesc(user, partner);
-            long unreadMessageCount = chatMessageRepository.countByReceiverAndSenderAndIsReadFalse(user, partner);
+            ChatMessage lastMessage = chatMessageRepository.findTopByReceiverOrderByTimestampDesc(partner);
+            long unreadMessageCount = chatMessageRepository.findByReceiverAndIsReadFalse(partner).size();
 
             ChatParticipantInfo info = new ChatParticipantInfo();
             info.setUserId(partner.getId());
