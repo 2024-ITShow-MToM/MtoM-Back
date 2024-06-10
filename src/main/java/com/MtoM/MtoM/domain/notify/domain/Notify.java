@@ -11,6 +11,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.domain.Auditable;
 
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Optional;
 
@@ -23,15 +24,16 @@ public class Notify {
     @Column(name = "notification_id")
     private Long id;
 
-    private String content;
+    private Long contentId;
 
-    private String url;
+    private String content;
 
     @Column(nullable = false)
     private Boolean isRead;
 
+    private LocalDateTime createdAt; // 알림이 생성된 시간
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private NotificationType notificationType;
 
     @ManyToOne
@@ -44,8 +46,8 @@ public class Notify {
     @JsonIgnore
     private UserDomain receiver;
 
-
-    public enum NotificationType{
-        HEART, COMMENT, CHAT, PROJECT
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now(); // 알림이 생성될 때 시간을 설정
     }
 }

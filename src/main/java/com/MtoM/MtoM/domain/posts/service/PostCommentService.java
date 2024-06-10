@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.posts.service;
 
+import com.MtoM.MtoM.domain.notify.domain.NotificationType;
 import com.MtoM.MtoM.domain.notify.domain.Notify;
 import com.MtoM.MtoM.domain.notify.service.NotifyService;
 import com.MtoM.MtoM.domain.posts.dao.PostHeartUsersResponse;
@@ -63,20 +64,23 @@ public class PostCommentService {
 
         // postId를 이용하여 게시물 검색 후 post 필드에 설정
         PostDomain post = postRepository.findById(commentDTO.getPostId())
-                        .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         postComment.setPost(post);
 
-        UserDomain user = userRepository.findById(commentDTO.getUserId())
-                        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        postComment.setUser(user);
+        UserDomain commentUser = userRepository.findById(commentDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        postComment.setUser(commentUser);
 
         // 게시물 작성자에게 알림 보내기
+        UserDomain postAuthor = post.getUser();
+
         Notify notify = new Notify();
-        notify.setContent(user.getName() + "님이 댓글을 작성하였습니다.");
-        notify.setReceiver(post.getUser());
-        notify.setSender(user);
-        notify.setNotificationType(Notify.NotificationType.CHAT); // 알림 타입 설정
+        notify.setContent("Q&A 답변: " + commentDTO.getContent());
+        notify.setReceiver(postAuthor); // 게시물 작성자를 알림의 수신자로 설정
+        notify.setSender(commentUser); // 댓글 작성자를 알림의 발신자로 설정
+        notify.setNotificationType(NotificationType.COMMENT); // 알림 타입 설정
         notify.setIsRead(false);
+        notify.setContentId(commentDTO.getPostId());
         notifyService.saveNotification(notify);
 
         postCommentRepository.save(postComment);
