@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.posts.service;
 
+import com.MtoM.MtoM.domain.notify.domain.Notify;
+import com.MtoM.MtoM.domain.notify.service.NotifyService;
 import com.MtoM.MtoM.domain.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.posts.dao.PostUserResponse;
 import com.MtoM.MtoM.domain.posts.domain.PostCommentDomain;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,8 @@ public class PostCommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRedisService postCommentRedisService;
+    private final NotifyService notifyService;
+    private final Sinks.Many<Notify> sink;
     private final S3Service s3Service;
 
     // Redis 키 접두사 상수 선언
@@ -64,6 +69,15 @@ public class PostCommentService {
         UserDomain user = userRepository.findById(commentDTO.getUserId())
                         .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         postComment.setUser(user);
+
+        // 게시물 작성자에게 알림 보내기
+        Notify notify = new Notify();
+        notify.setContent(user.getName() + "님이 댓글을 작성하였습니다.");
+        notify.setReceiver(post.getUser());
+        notify.setSender(user);
+        notify.setNotificationType(Notify.NotificationType.CHAT); // 알림 타입 설정
+        notify.setIsRead(false);
+        notifyService.saveNotification(notify);
 
         postCommentRepository.save(postComment);
     }

@@ -1,6 +1,8 @@
 package com.MtoM.MtoM.global.conifg;
 
 import com.MtoM.MtoM.domain.chat.service.RedisMessageSubscriber;
+import com.MtoM.MtoM.domain.notify.service.NotificationRedisSubscriber;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -52,15 +55,33 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory, RedisMessageSubscriber subscriber) {
+    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory,
+                                                        @Qualifier("chatListenerAdapter") MessageListenerAdapter chatListenerAdapter,
+                                                        @Qualifier("notificationListenerAdapter") MessageListenerAdapter notificationListenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(subscriber, topic());
+        container.addMessageListener(chatListenerAdapter, chatTopic());
+        container.addMessageListener(notificationListenerAdapter, notificationTopic());
         return container;
     }
 
     @Bean
-    public ChannelTopic topic() {
+    public MessageListenerAdapter chatListenerAdapter(RedisMessageSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
+    }
+
+    @Bean
+    public MessageListenerAdapter notificationListenerAdapter(NotificationRedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
+    }
+
+    @Bean(name = "chatTopic")
+    public ChannelTopic chatTopic() {
         return new ChannelTopic("chat");
+    }
+
+    @Bean(name = "notificationTopic")
+    public ChannelTopic notificationTopic() {
+        return new ChannelTopic("notificationChannel");
     }
 }
