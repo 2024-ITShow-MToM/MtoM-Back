@@ -17,4 +17,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             "UNION " +
             "SELECT DISTINCT c.receiver FROM ChatMessage c WHERE c.sender = :user")
     List<UserDomain> findChatPartners(@Param("user") UserDomain user);
+    @Query("SELECT c FROM ChatMessage c WHERE (c.sender = :user1 AND c.receiver = :user2) OR (c.sender = :user2 AND c.receiver = :user1) ORDER BY c.timestamp DESC")
+    ChatMessage findTopByUsersOrderByTimestampDesc(@Param("user1") UserDomain user1, @Param("user2") UserDomain user2);
+
 }
