@@ -1,7 +1,12 @@
 package com.MtoM.MtoM.domain.posts.service;
 
+import com.MtoM.MtoM.domain.notify.domain.NotificationType;
+import com.MtoM.MtoM.domain.notify.domain.Notify;
+import com.MtoM.MtoM.domain.notify.service.NotifyService;
 import com.MtoM.MtoM.domain.posts.domain.PostDomain;
 import com.MtoM.MtoM.domain.posts.repository.PostRepository;
+import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,8 @@ public class PostRedisService {
     private static final String HEART_COUNT_KEY_PREFIX = "post:heart:";
     private final RedisTemplate<String, Integer> redisTemplate;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final NotifyService notifyService;
 
     // 게시물의 조회수를 증가시키는 메소드
     public void incrementViewCount(Long postId) {
@@ -36,13 +43,13 @@ public class PostRedisService {
     }
 
     // 게시물의 좋아요 상태를 토글
+    // TODO : 하트 누른 게시판 나중에 DB에 추가
     public void togglePostHeart(String userId, Long postId) {
         Optional<PostDomain> postOpt = postRepository.findById(postId);
         if (!postOpt.isPresent()) {
             throw new IllegalArgumentException("Invalid post ID: " + postId);
         }
 
-        // TODO : 하트 누른 게시판 나중에 DB에 추가
         PostDomain post = postOpt.get();
         String postCreatorId = post.getUser().getId(); // 게시물 작성자의 userId 가져오기
 
@@ -52,6 +59,20 @@ public class PostRedisService {
             redisTemplate.opsForHash().delete(key, userId); // 이미 좋아요를 눌렀다면 좋아요 삭제
         } else {
             redisTemplate.opsForHash().put(key, userId, 1); // 좋아요를 누르지 않았다면 좋아요 추가
+
+            // 좋아요를 추가할 때 알림 생성
+            UserDomain sender = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
+            UserDomain receiver = post.getUser();
+
+            Notify notify = new Notify();
+            notify.setContentId(postId);
+            notify.setContent("내 QNA에 하트를 남겼어요!.");
+            notify.setReceiver(receiver);
+            notify.setSender(sender);
+            notify.setNotificationType(NotificationType.HEART);
+            notify.setIsRead(false);
+            notifyService.saveNotification(notify);
         }
     }
 
