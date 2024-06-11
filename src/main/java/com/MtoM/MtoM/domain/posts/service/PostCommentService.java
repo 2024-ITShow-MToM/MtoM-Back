@@ -1,5 +1,8 @@
 package com.MtoM.MtoM.domain.posts.service;
 
+import com.MtoM.MtoM.domain.notify.domain.NotificationType;
+import com.MtoM.MtoM.domain.notify.domain.Notify;
+import com.MtoM.MtoM.domain.notify.service.NotifyService;
 import com.MtoM.MtoM.domain.posts.dao.PostHeartUsersResponse;
 import com.MtoM.MtoM.domain.posts.dao.PostUserResponse;
 import com.MtoM.MtoM.domain.posts.domain.PostCommentDomain;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,8 @@ public class PostCommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostCommentRedisService postCommentRedisService;
+    private final NotifyService notifyService;
+    private final Sinks.Many<Notify> sink;
     private final S3Service s3Service;
 
     // Redis 키 접두사 상수 선언
@@ -58,12 +64,24 @@ public class PostCommentService {
 
         // postId를 이용하여 게시물 검색 후 post 필드에 설정
         PostDomain post = postRepository.findById(commentDTO.getPostId())
-                        .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
         postComment.setPost(post);
 
-        UserDomain user = userRepository.findById(commentDTO.getUserId())
-                        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        postComment.setUser(user);
+        UserDomain commentUser = userRepository.findById(commentDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        postComment.setUser(commentUser);
+
+        // 게시물 작성자에게 알림 보내기
+        UserDomain postAuthor = post.getUser();
+
+        Notify notify = new Notify();
+        notify.setContent("Q&A 답변: " + commentDTO.getContent());
+        notify.setReceiver(postAuthor); // 게시물 작성자를 알림의 수신자로 설정
+        notify.setSender(commentUser); // 댓글 작성자를 알림의 발신자로 설정
+        notify.setNotificationType(NotificationType.COMMENT); // 알림 타입 설정
+        notify.setIsRead(false);
+        notify.setContentId(commentDTO.getPostId());
+        notifyService.saveNotification(notify);
 
         postCommentRepository.save(postComment);
     }

@@ -1,7 +1,10 @@
 package com.MtoM.MtoM.global.conifg;
+import com.MtoM.MtoM.domain.notify.service.NotifyToStringConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -25,5 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
                         .allowCredentials(true);
             }
         };
+    }
+
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new NotifyToStringConverter(objectMapper));
     }
 }

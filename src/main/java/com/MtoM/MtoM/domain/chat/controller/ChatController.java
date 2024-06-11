@@ -41,5 +41,4 @@ public class ChatController {
     public List<ChatParticipantInfo> getNotifications(@RequestParam String userId) {
         return chatMessageService.getChatParticipantsInfo(userId);
     }
-
 }
