@@ -61,10 +61,10 @@ public class ChatMessageService {
         return chatMessageRepository.findByReceiver(receiver);
     }
 
-    public ChatMessage getLastMessageForUser(String userId) {
-        UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
-        return chatMessageRepository.findTopByReceiverOrderByTimestampDesc(receiver);
-    }
+//    public ChatMessage getLastMessageForUser(String userId) {
+//        UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
+//        return chatMessageRepository.findTopByReceiverOrderByTimestampDesc(receiver);
+//    }
 
     public long countUnreadMessages(String userId) {
         UserDomain receiver = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Receiver not found"));
@@ -72,19 +72,26 @@ public class ChatMessageService {
     }
 
     public List<ChatParticipantInfo> getChatParticipantsInfo(String userId) {
-        UserDomain user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        UserDomain user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         List<UserDomain> chatPartners = chatMessageRepository.findChatPartners(user);
 
         List<ChatParticipantInfo> participantsInfo = new ArrayList<>();
         for (UserDomain partner : chatPartners) {
-            ChatMessage lastMessage = chatMessageRepository.findTopByUsersOrderByTimestampDesc(user, partner);
-            long unreadMessageCount = chatMessageRepository.findByReceiverAndIsReadFalse(partner).size();
+            Optional<ChatMessage> lastMessageOpt = chatMessageRepository.findTopByUsersOrderByTimestampDesc(user, partner);
+            long unreadMessageCount = chatMessageRepository.countByReceiverAndIsReadFalse(partner);
 
             ChatParticipantInfo info = new ChatParticipantInfo();
             info.setUserId(partner.getId());
-            info.setLastMessage(lastMessage != null ? lastMessage.getMessage() : null);
+            if (lastMessageOpt.isPresent()) {
+                ChatMessage lastMessage = lastMessageOpt.get();
+                info.setLastMessage(lastMessage.getMessage());
+                info.setLastMessageTime(lastMessage.getTimestamp());
+            } else {
+                info.setLastMessage(null);
+                info.setLastMessageTime(null);
+            }
             info.setUnreadMessageCount(unreadMessageCount);
-            info.setLastMessageTime(lastMessage != null ? lastMessage.getTimestamp() : null);
 
             participantsInfo.add(info);
         }
