@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
-@Getter @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity (name = "skills")
