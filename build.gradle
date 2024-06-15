@@ -11,6 +11,10 @@ java {
 	sourceCompatibility = '17'
 }
 
+bootJar {
+	archiveFileName = '2024-mtom-server.jar'
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
