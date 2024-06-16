@@ -78,13 +78,13 @@ public class ChatMessageService {
 
         List<ChatParticipantInfo> participantsInfo = new ArrayList<>();
         for (UserDomain partner : chatPartners) {
-            Optional<ChatMessage> lastMessageOpt = chatMessageRepository.findTopByUsersOrderByTimestampDesc(user, partner);
+            List<ChatMessage> lastMessages = chatMessageRepository.findTopByUsersOrderByTimestampDesc(user, partner);
+            ChatMessage lastMessage = lastMessages.isEmpty() ? null : lastMessages.get(0);
             long unreadMessageCount = chatMessageRepository.countByReceiverAndIsReadFalse(partner);
 
             ChatParticipantInfo info = new ChatParticipantInfo();
             info.setUserId(partner.getId());
-            if (lastMessageOpt.isPresent()) {
-                ChatMessage lastMessage = lastMessageOpt.get();
+            if (lastMessage != null) {
                 info.setLastMessage(lastMessage.getMessage());
                 info.setLastMessageTime(lastMessage.getTimestamp());
             } else {
