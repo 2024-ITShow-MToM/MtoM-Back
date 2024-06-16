@@ -25,6 +25,7 @@ public class RegisterProfileInfoDto {
     private String personal;
     private String imogi;
     private String mentoring_topics;
+    private String introduction;
 
     public List<SkillDomain> toSkillEntity(){
         return skills.stream()
