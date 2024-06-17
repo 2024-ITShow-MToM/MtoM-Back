@@ -2,7 +2,7 @@ package com.MtoM.MtoM.domain.mentor.service;
 
 import com.MtoM.MtoM.domain.mentor.dto.req.MentorRecommendRequest;
 import com.MtoM.MtoM.domain.mentor.dto.res.MentorRecommendResponse;
-import com.MtoM.MtoM.domain.user.domain.Major;
+import com.MtoM.MtoM.global.util.enums.Major;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

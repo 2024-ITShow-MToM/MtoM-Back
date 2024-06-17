@@ -1,7 +1,7 @@
     package com.MtoM.MtoM.domain.mentor.dto.req;
 
-    import com.MtoM.MtoM.domain.mentor.dto.Worry;
-    import com.MtoM.MtoM.domain.user.domain.Major;
+    import com.MtoM.MtoM.global.util.enums.Worry;
+    import com.MtoM.MtoM.global.util.enums.Major;
     import lombok.Getter;
 
     @Getter

@@ -3,6 +3,8 @@ package com.MtoM.MtoM.domain.user.domain;
 import com.MtoM.MtoM.domain.mentor.domain.MentorDomain;
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
+import com.MtoM.MtoM.global.util.enums.Gender;
+import com.MtoM.MtoM.global.util.enums.Major;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

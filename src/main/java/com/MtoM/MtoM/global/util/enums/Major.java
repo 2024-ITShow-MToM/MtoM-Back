@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.user.domain;
+package com.MtoM.MtoM.global.util.enums;
 
 public enum Major {
     소프트웨어과,

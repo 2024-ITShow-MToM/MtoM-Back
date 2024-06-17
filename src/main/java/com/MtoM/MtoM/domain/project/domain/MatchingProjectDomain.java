@@ -1,10 +1,10 @@
 package com.MtoM.MtoM.domain.project.domain;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.global.util.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 @Builder
 @Getter
