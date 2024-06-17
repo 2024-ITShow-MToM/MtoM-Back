@@ -28,76 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public void registerUser(RegisterRequestDto requestDto){
-        String id = requestDto.getId();
-        String password = passwordEncoder.encode(requestDto.getPassword());
-        String email = requestDto.getEmail();
-
-        duplicateId(id);
-        duplicatedEmail(email);
-
-        userRepository.save(requestDto.toEntity(password));
-    }
-
-    public void registerProfileInfo(RegisterProfileInfoDto requestDto){
-        String id = requestDto.getUserId().getId();
-        checkId(id);
-
-        Optional<UserDomain> optionalUser = userRepository.findById(id);
-        UserDomain user = optionalUser.get();
-
-        user.setName(requestDto.getName());
-        user.setStudent_id(requestDto.getStudent_id());
-        user.setBirthday(requestDto.getBirthday());
-        user.setGender(requestDto.getGender());
-        user.setPhonenumber(requestDto.getPhonenumber());
-        user.setMajor(requestDto.getMajor());
-        user.setMbti(requestDto.getMbti());
-        user.setPersonal(requestDto.getPersonal());
-        user.setImogi(requestDto.getImogi());
-        user.setMentoring_topics(requestDto.getMentoring_topics());
-        user.setIntroduction(requestDto.getIntroduction());
-
-        userRepository.save(user);
-        List<SkillDomain> skillDomainList = requestDto.toSkillEntity();
-        for(SkillDomain skill : skillDomainList)
-            skillRepository.save(skill);
-    }
-
-    public String loginUser(LoginUserRequestDto requestDto){
-        String id = requestDto.getId();
-        checkId(id);
-
-        String password = requestDto.getPassword();
-
-        Optional<UserDomain> optionalUser = userRepository.findById(id);
-        UserDomain user = optionalUser.get();
-        String hashedPasword = user.getPassword();
-
-        checkPassword(password, hashedPasword);
-
-        return id;
-    }
-
-    @Transactional(readOnly = true)
-    public FindByUserResponseDto findByUser(String id){
-        checkId(id);
-
-        Optional<UserDomain> optionalUser = userRepository.findById(id);
-        UserDomain user = optionalUser.get();
-        return new FindByUserResponseDto(user);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<FindAllUserResponseDto> findAllUser(){
-        List<UserDomain> users = userRepository.findAll();
-
-        return users.stream()
-                .map(FindAllUserResponseDto::new)
-                .collect(Collectors.toList());
-    }
+    
 
     @Transactional(readOnly = true)
     public List<SearchUserResponseDto> searchUser(String searchResult){
@@ -108,29 +39,5 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void duplicateId(String id){
-        if(userRepository.existsById(id)){
-            throw new IdDuplicateException("id duplicated", ErrorCode.ID_DUPLICATION);
-        }
-    }
-
-
-    public void duplicatedEmail(String email){
-        if(userRepository.existsByEmail(email)){
-            throw new EmailDuplicateException("email duplicated", ErrorCode.EMAIL_DUPLICATION);
-        }
-    }
-
-    public void checkId(String id){
-        if(!userRepository.existsById(id)){
-            throw new IDNotFoundException("id not found", ErrorCode.ID_NOTFOUND);
-        }
-    }
-
-    public void checkPassword(String password, String hashedPassword){
-        if(!passwordEncoder.matches(password, hashedPassword)){
-            throw new PasswordNotMatchException("password not found", ErrorCode.PASSWORD_NOTMATCH);
-        }
-    }
 }
 
