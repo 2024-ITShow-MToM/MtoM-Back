@@ -49,6 +49,8 @@ public class UserDomain {
 
     private String mentoring_topics;
 
+    private String introduction;
+
     @JsonIgnore
     private String social;
 
