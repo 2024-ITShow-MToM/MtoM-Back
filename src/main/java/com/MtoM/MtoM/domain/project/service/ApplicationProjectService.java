@@ -1,5 +1,7 @@
 package com.MtoM.MtoM.domain.project.service;
 
+import com.MtoM.MtoM.domain.groupChat.domain.GroupChatDomain;
+import com.MtoM.MtoM.domain.groupChat.repository.GroupChatRepository;
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.domain.project.dto.req.ApplicationProjectRequestDto;
@@ -27,7 +29,7 @@ public class ApplicationProjectService {
     private final MatchingProjectRepository matchingProjectRepository;
     private final UserRepository userRepository;
     private final RedisService redisService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final GroupChatRepository groupChatRepository   ;
 
     @Transactional
     public MatchingProjectDomain execute(ApplicationProjectRequestDto requestDto){
@@ -53,6 +55,10 @@ public class ApplicationProjectService {
 
         redisService.addCurrentMemberCount(projectId, role);
 
+        // 단체 채팅방 생성 혹은 추가
+        if(!groupChatRepository.existsByProjectId(project.getId()))
+            groupChatRepository.save(requestDto.chatToEntity(project));
+
         return matchingProjectRepository.save(requestDto.toEntity(user, project));
     }
 
@@ -70,4 +76,5 @@ public class ApplicationProjectService {
                 return "";
         }
     }
+
 }
