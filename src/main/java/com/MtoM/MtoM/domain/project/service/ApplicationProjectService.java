@@ -16,6 +16,7 @@ import com.MtoM.MtoM.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class ApplicationProjectService {
     private final RedisService redisService;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Transactional
     public MatchingProjectDomain execute(ApplicationProjectRequestDto requestDto){
         String userId = requestDto.getUserId();
         Long projectId = requestDto.getProjectId();
