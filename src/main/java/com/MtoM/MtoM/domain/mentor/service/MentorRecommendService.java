@@ -27,25 +27,18 @@ public class MentorRecommendService {
 
         List<UserDomain> usersByMajor = userRepository.findAllByMajor(major);
 
-        Set<UserDomain> uniqueUsers = new HashSet<>();
-        uniqueUsers.addAll(usersByMajor);
+        Set<UserDomain> uniqueUsers = new HashSet<>(usersByMajor);
 
         for (String content : personalContents) {
             List<UserDomain> usersByPersonal = userRepository.findAllByPersonalContent(content);
             uniqueUsers.addAll(usersByPersonal);
         }
 
-        // 자신은 response에서 제외시키기
-        Iterator<UserDomain> iterator = uniqueUsers.iterator();
-        while (iterator.hasNext()) {
-            UserDomain user = iterator.next();
-            if (user.getId().equals(userId)) {
-                iterator.remove();
-            }
+        // 부족한 경우 임의의 사용자 추가
+        if (uniqueUsers.size() < 3) {
+            List<UserDomain> additionalUsers = userRepository.findRandomUsers(3 - uniqueUsers.size());
+            uniqueUsers.addAll(additionalUsers);
         }
-
-        List<UserDomain> additionalUsers = userRepository.findRandomUsers(3 - uniqueUsers.size());
-        uniqueUsers.addAll(additionalUsers);
 
         return uniqueUsers.stream()
                 .limit(3)
