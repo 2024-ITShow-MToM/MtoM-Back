@@ -24,20 +24,6 @@ public class S3Service {
     @Value("${could.aws.s3.bucket}")
     private String bucketName;
 
-    public void uploadProfileFile(String id, MultipartFile file, String type) throws IOException {
-
-        checkId(id);
-
-        String fileName = generateFileName(id, type);
-
-        Optional<UserDomain> optionalUser = userRepository.findById(id);
-        UserDomain user = optionalUser.get();
-        user.setProfile(fileName);
-        userRepository.save(user);
-
-        uploadFileToS3(fileName, file);
-    }
-
     public String uploadImage(MultipartFile file, String type) throws IOException {
         String fileName = generateFileName(UUID.randomUUID().toString(), type);
         return uploadFileToS3(fileName, file);

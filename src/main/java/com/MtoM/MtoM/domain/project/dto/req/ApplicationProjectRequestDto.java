@@ -2,7 +2,7 @@ package com.MtoM.MtoM.domain.project.dto.req;
 
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
-import com.MtoM.MtoM.domain.project.domain.Role;
+import com.MtoM.MtoM.global.util.enums.Role;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import lombok.Getter;
 

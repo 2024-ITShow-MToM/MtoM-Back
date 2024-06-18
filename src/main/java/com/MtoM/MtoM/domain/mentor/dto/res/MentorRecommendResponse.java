@@ -1,6 +1,6 @@
 package com.MtoM.MtoM.domain.mentor.dto.res;
 
-import com.MtoM.MtoM.domain.user.domain.Major;
+import com.MtoM.MtoM.global.util.enums.Major;
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import lombok.Getter;
 

@@ -1,18 +1,15 @@
 package com.MtoM.MtoM.domain.user;
 
 import com.MtoM.MtoM.domain.qna.categroy.dao.QnaPostResponse;
-import com.MtoM.MtoM.domain.qna.categroy.service.QnaCategoryService;
-import com.MtoM.MtoM.domain.user.domain.UserDomain;
 import com.MtoM.MtoM.domain.user.dto.req.LoginUserRequestDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterProfileInfoDto;
 import com.MtoM.MtoM.domain.user.dto.req.RegisterRequestDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindAllUserResponseDto;
 import com.MtoM.MtoM.domain.user.dto.res.FindByUserResponseDto;
 import com.MtoM.MtoM.domain.user.dto.res.SearchUserResponseDto;
-import com.MtoM.MtoM.domain.user.service.UserService;
+import com.MtoM.MtoM.domain.user.service.*;
 import com.MtoM.MtoM.global.S3Service.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,66 +22,60 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-    private final UserService userService;
-    private final QnaCategoryService postService;
-    private final S3Service s3UploadService;
+    private final RegisterUserService registerUserService;
+    private final RegisterProfileService registerProfileService;
+    private final RegisterProfileImageService registerProfileImageService;
+    private final LoginService loginService;
+    private final FindByUserService findByUserService;
+    private final GetQnaPostByUserService getQnaPostByUserService;
+    private final FindAllUserService findAllUserService;
+    private final SearchUserService searchUserService;
+
 
     @PostMapping
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDto requestDto){
-        userService.registerUser(requestDto);
+        registerUserService.execute(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다");
     }
 
     @PostMapping("/profile/info")
-    public ResponseEntity<String> registerProfileInfo(@RequestBody RegisterProfileInfoDto requestDto){
-        userService.registerProfileInfo(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("프로필 정보 등록 성공했습니다.");
+    public ResponseEntity<String> registerProfileInfo(@RequestBody RegisterProfileInfoDto requestDto) throws IOException {
+        registerProfileService.execute(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("프로필 등록 성공했습니다.");
     }
 
     @PostMapping("/profile/img")
     public ResponseEntity<String> registerProfileImg (@RequestParam(value = "profile") MultipartFile file,
-                                                      @RequestParam(value = "id") String id) {
-        try{
-            s3UploadService.uploadProfileFile(id, file, "profile");
-            return ResponseEntity.ok().body("프로필 이미지 업로드에 성공했습니다");
-        }catch (IOException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("프로필 이미지 업로드에 실패했습니다");
-        }
-
+                                                      @RequestParam(value = "id") String id) throws IOException {
+        registerProfileImageService.execute(file, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("프로필 이미지 등록 성공했습니다.");
     }
-
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginUserRequestDto requestDto){
-        String id = userService.loginUser(requestDto);
+        String id = loginService.execute(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<FindByUserResponseDto> findByUser (@PathVariable("userId") String userId){
-        FindByUserResponseDto user = userService.findByUser(userId);
+        FindByUserResponseDto user = findByUserService.execute(userId);
         return ResponseEntity.status(HttpStatus.OK).body(user);
-    }
-
-    @GetMapping("/profile/img/{userId}")
-    public ResponseEntity<String> findByProfileImg(@PathVariable("userId") String userId){
-        String profileImgURL = s3UploadService.getImagePath(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(profileImgURL);
     }
 
     @GetMapping("/posts/{userId}")
     public List<QnaPostResponse>  getQnaPostsByUser(@PathVariable("userId") String userId) {
-        return postService.getQnaPostsByUser(userId);
+        return getQnaPostByUserService.execute(userId);
     }
 
     @GetMapping
     public ResponseEntity<List<FindAllUserResponseDto>> findAllUser(){
-        List<FindAllUserResponseDto> users = userService.findAllUser();
+        List<FindAllUserResponseDto> users = findAllUserService.execute();
         return ResponseEntity.ok().body(users);
     }
 
     @GetMapping("/searches/{searchResult}")
     public ResponseEntity<List<SearchUserResponseDto>> searchUser(@PathVariable("searchResult") String searchResult){
-        List<SearchUserResponseDto> users = userService.searchUser(searchResult);
+        List<SearchUserResponseDto> users = searchUserService.execute(searchResult);
         return ResponseEntity.ok().body(users);
     }
 }

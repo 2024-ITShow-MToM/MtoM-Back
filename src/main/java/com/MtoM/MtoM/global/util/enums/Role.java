@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.project.domain;
+package com.MtoM.MtoM.global.util.enums;
 
 public enum Role {
     디자인,

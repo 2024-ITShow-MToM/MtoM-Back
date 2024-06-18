@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.mentor.dto;
+package com.MtoM.MtoM.global.util.enums;
 
 public enum Worry {
     취업,

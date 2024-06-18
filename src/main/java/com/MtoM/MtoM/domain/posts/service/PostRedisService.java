@@ -1,6 +1,6 @@
 package com.MtoM.MtoM.domain.posts.service;
 
-import com.MtoM.MtoM.domain.notify.domain.NotificationType;
+import com.MtoM.MtoM.global.util.enums.NotificationType;
 import com.MtoM.MtoM.domain.notify.domain.Notify;
 import com.MtoM.MtoM.domain.notify.service.NotifyService;
 import com.MtoM.MtoM.domain.posts.domain.PostDomain;

@@ -1,19 +1,12 @@
 package com.MtoM.MtoM.domain.notify.domain;
 
 import com.MtoM.MtoM.domain.user.domain.UserDomain;
+import com.MtoM.MtoM.global.util.enums.NotificationType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.domain.Auditable;
 
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAccessor;
-import java.util.Optional;
 
 @Entity
 @Data

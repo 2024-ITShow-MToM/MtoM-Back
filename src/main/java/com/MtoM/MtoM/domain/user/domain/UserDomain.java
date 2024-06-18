@@ -3,6 +3,8 @@ package com.MtoM.MtoM.domain.user.domain;
 import com.MtoM.MtoM.domain.mentor.domain.MentorDomain;
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
+import com.MtoM.MtoM.global.util.enums.Gender;
+import com.MtoM.MtoM.global.util.enums.Major;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +12,7 @@ import lombok.*;
 import java.util.List;
 
 @Builder
-@Getter @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity (name = "users")
@@ -77,4 +79,23 @@ public class UserDomain {
     @JsonIgnore
     @OneToMany(mappedBy = "mentee",  cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<MentorDomain> menteeDomainList;
+
+
+    public void registerProfile(String name, Long student_id, String birthday, Gender gender, String phonenumber, Major major, String mbti, String personal, String imogi, String mentoring_topics, String introduction){
+        this.name = name;
+        this.student_id = student_id;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.phonenumber = phonenumber;
+        this.major = major;
+        this.mbti = mbti;
+        this.personal = personal;
+        this.imogi = imogi;
+        this.mentoring_topics = mentoring_topics;
+        this.introduction = introduction;
+    }
+
+    public void registerProfileImage(String imageUrl){
+        this.profile = imageUrl;
+    }
 }
