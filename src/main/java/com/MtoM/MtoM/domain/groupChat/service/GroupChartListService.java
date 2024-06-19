@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class GroupChartList {
+public class GroupChartListService {
     private final ProjectRepository projectRepository;
     private final GroupChatRepository groupChatRepository;
 
