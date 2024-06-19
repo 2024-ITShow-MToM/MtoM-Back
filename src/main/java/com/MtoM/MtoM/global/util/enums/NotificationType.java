@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.notify.domain;
+package com.MtoM.MtoM.global.util.enums;
 
 public enum NotificationType {
     HEART, COMMENT, CHAT, PROJECT

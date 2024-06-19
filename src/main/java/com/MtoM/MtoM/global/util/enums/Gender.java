@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.user.domain;
+package com.MtoM.MtoM.global.util.enums;
 
 public enum Gender {
     남자,
