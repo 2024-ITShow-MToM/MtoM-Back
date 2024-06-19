@@ -6,11 +6,24 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @Entity
 @Data
 public class ChatMessage {
+
+
+    @PrePersist
+    public void prePersist() {
+        this.timestamp = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+    }
+
+    public String getFormattedTimestamp() {
+        return timestamp.atZone(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
