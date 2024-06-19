@@ -24,6 +24,7 @@ public class FindAllUserResponseDto {
     private String personal;
     private String imogi;
     private String mentoring_topics;
+    private String information;
     private List<Skill> skills;
 
     public FindAllUserResponseDto(UserDomain user){
@@ -40,6 +41,7 @@ public class FindAllUserResponseDto {
         this.personal = user.getPersonal();
         this.imogi = user.getImogi();
         this.mentoring_topics = user.getMentoring_topics();
+        this.information = user.getIntroduction();
         this.skills = user.getSkillDomainList().stream()
                 .map(skillDomain -> new Skill(skillDomain.getSkill_name(), skillDomain.getSkill_score()))
                 .collect(Collectors.toList());
