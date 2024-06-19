@@ -31,8 +31,10 @@ public class GroupChatController {
 
     //채팅 보내기
     @PostMapping("/{userId}")
-    public ResponseEntity<ResponsePayload<GroupChatContentDomain>> sendChat(@RequestBody SendChatRequestDto requestDto){
-        GroupChatContentDomain content = sendGroupChatService.execute(requestDto);
+    public ResponseEntity<ResponsePayload<GroupChatContentDomain>> sendChat(@RequestBody SendChatRequestDto requestDto,
+                                                                            @PathVariable("userId") String userId){
+        GroupChatContentDomain content = sendGroupChatService.execute(requestDto, userId);
         return new ResponseEntity<>(new ResponsePayload<>("chat send successfully", content), HttpStatus.CREATED);
     }
+
 }
