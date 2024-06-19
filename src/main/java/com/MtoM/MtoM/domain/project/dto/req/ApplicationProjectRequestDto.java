@@ -1,5 +1,6 @@
 package com.MtoM.MtoM.domain.project.dto.req;
 
+import com.MtoM.MtoM.domain.groupChat.domain.GroupChatDomain;
 import com.MtoM.MtoM.domain.project.domain.MatchingProjectDomain;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;
 import com.MtoM.MtoM.global.util.enums.Role;
@@ -19,6 +20,12 @@ public class ApplicationProjectRequestDto {
                 .project(project)
                 .role(role)
                 .application(application)
+                .build();
+    }
+
+    public GroupChatDomain chatToEntity(ProjectDomain project){
+        return GroupChatDomain.builder()
+                .project(project)
                 .build();
     }
 }

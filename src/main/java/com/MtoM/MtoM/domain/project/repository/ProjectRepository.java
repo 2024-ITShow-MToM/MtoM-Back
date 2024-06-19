@@ -18,4 +18,6 @@ public interface ProjectRepository extends JpaRepository<ProjectDomain, Long> {
 
     @Query("SELECT p FROM projects p WHERE p.promoter_personnel > 0")
     List<ProjectDomain> findByPromoter();
+
+    List<ProjectDomain> findAllByUserId(String userId);
 }
