@@ -71,7 +71,7 @@ public class ChatMessageService {
         return chatMessageRepository.findByReceiverAndIsReadFalse(receiver).size();
     }
 
-    public List<ChatParticipantInfo> getChatParticipantsInfo(String userId) {
+    public List<ChatParticipantInfo>  getChatParticipantsInfo(String userId) {
         UserDomain user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         List<UserDomain> chatPartners = chatMessageRepository.findChatPartners(user);

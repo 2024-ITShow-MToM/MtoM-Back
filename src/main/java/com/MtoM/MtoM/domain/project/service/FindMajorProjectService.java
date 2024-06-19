@@ -9,6 +9,7 @@ import com.MtoM.MtoM.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class FindMajorProjectService {
     private final RedisService redisService;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Transactional(readOnly = true)
     public List<FindMajorProjectResponseDto> execute(String major){
         List<ProjectDomain> projects = new ArrayList<>();
 
