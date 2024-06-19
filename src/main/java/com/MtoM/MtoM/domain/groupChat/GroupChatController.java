@@ -1,6 +1,6 @@
 package com.MtoM.MtoM.domain.groupChat;
 
-import com.MtoM.MtoM.domain.chat.dto.GroupChatListResponseDto;
+import com.MtoM.MtoM.domain.groupChat.dto.res.GroupChatListResponseDto;
 import com.MtoM.MtoM.domain.groupChat.service.GroupChartList;
 import com.MtoM.MtoM.global.message.ResponsePayload;
 import lombok.RequiredArgsConstructor;

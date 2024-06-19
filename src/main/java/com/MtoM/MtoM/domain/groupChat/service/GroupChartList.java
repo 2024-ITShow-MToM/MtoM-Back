@@ -1,6 +1,6 @@
 package com.MtoM.MtoM.domain.groupChat.service;
 
-import com.MtoM.MtoM.domain.chat.dto.GroupChatListResponseDto;
+import com.MtoM.MtoM.domain.groupChat.dto.res.GroupChatListResponseDto;
 import com.MtoM.MtoM.domain.groupChat.domain.GroupChatDomain;
 import com.MtoM.MtoM.domain.groupChat.repository.GroupChatRepository;
 import com.MtoM.MtoM.domain.project.domain.ProjectDomain;

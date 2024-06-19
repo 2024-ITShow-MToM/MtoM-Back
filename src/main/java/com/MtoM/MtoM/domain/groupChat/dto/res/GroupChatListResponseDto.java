@@ -1,4 +1,4 @@
-package com.MtoM.MtoM.domain.chat.dto;
+package com.MtoM.MtoM.domain.groupChat.dto.res;
 
 import com.MtoM.MtoM.domain.groupChat.domain.GroupChatDomain;
 import com.MtoM.MtoM.domain.groupChat.service.GroupChartList;
