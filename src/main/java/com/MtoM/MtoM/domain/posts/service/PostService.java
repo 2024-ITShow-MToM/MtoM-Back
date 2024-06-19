@@ -179,7 +179,7 @@ public class PostService {
 
         PostUserResponse userResponse = new PostUserResponse();
         UserDomain user = post.getUser();
-        String profileImgURL = s3Service.getImagePath(user.getId());
+        String profileImgURL = user.getProfile();
 
         userResponse.setProfile(profileImgURL);
         userResponse.setName(user.getStudent_id() + " " + user.getName());
@@ -215,7 +215,7 @@ public class PostService {
 
         UserDomain user = comment.getUser();
         // TODO : null 일때 기본 프로필 되도록 수정하기
-        String profileImgURL = s3Service.getImagePath(user.getId());
+        String profileImgURL = user.getProfile();
         response.setUserId(user.getId());
         response.setProfile(profileImgURL);
         response.setName(user.getStudent_id() + " " + user.getName());
@@ -244,7 +244,7 @@ public class PostService {
                 UserDomain user = userRepository.findById(userId)
                         .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
 
-                String profileImgURL = s3Service.getImagePath(user.getId());
+                String profileImgURL = user.getProfile();
                 PostUserResponse userResponse = new PostUserResponse();
                 userResponse.setUserId(user.getId());
                 userResponse.setProfile(profileImgURL);

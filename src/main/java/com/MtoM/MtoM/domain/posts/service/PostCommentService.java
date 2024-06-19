@@ -140,7 +140,7 @@ public class PostCommentService {
                 UserDomain user = userRepository.findById(userId)
                         .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
 
-                String profileImgURL = s3Service.getImagePath(user.getId());
+                String profileImgURL = user.getProfile();
                 PostUserResponse userResponse = new PostUserResponse();
                 userResponse.setUserId(user.getId());
                 userResponse.setProfile(profileImgURL);
