@@ -23,6 +23,7 @@ public class FindByUserResponseDto {
     private String mbti;
     private String personal;
     private String imogi;
+    private String information;
     private String mentoring_topics;
     private List<Skill> skills;
 
@@ -39,6 +40,7 @@ public class FindByUserResponseDto {
         this.mbti = user.getMbti();
         this.personal = user.getPersonal();
         this.imogi = user.getImogi();
+        this.information = user.getIntroduction();
         this.mentoring_topics = user.getMentoring_topics();
         this.skills = user.getSkillDomainList().stream()
                 .map(skillDomain -> new Skill(skillDomain.getSkill_name(), skillDomain.getSkill_score()))
